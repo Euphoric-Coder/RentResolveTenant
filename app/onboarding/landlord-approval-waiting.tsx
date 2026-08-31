@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import {
   CheckCircle, Clock, Send, Building2, User, Users,
-  ArrowRight, RefreshCw, Info, Home,
+  ArrowRight, RefreshCw, Info, Home, ShieldAlert,
 } from 'lucide-react-native';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -17,7 +18,7 @@ const TIMELINE = [
   { id: 's2', label: 'Tenant details submitted', icon: User },
   { id: 's3', label: 'Request sent to landlord', icon: Send },
   { id: 's4', label: 'Waiting for approval', icon: Clock },
-  { id: 's5', label: 'Dashboard access', icon: Home },
+  { id: 's5', label: 'Dashboard access activated', icon: Home },
 ];
 
 export default function LandlordApprovalWaitingScreen() {
@@ -47,22 +48,38 @@ export default function LandlordApprovalWaitingScreen() {
 
   return (
     <View style={[styles.screen, { backgroundColor: colors.background }]}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
-        <View style={[styles.headerSection, { paddingTop: insets.top + 28 }]}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+      >
+        <LinearGradient
+          colors={['#B45309', '#D97706', '#F59E0B']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.headerSection, { paddingTop: Math.max(insets.top, 20) + 24 }]}
+        >
+          <View style={styles.headerOrb1} />
+          <View style={styles.headerOrb2} />
+          
           <Animated.View entering={FadeInDown.duration(600)} style={styles.headerContent}>
             <View style={styles.headerIconWrap}>
-              <Clock size={34} color="#FFFFFF" />
+              <Clock size={32} color="#FFFFFF" />
             </View>
-            <Text style={[styles.headerTitle, { fontFamily: 'Inter-ExtraBold' }]}>Waiting for Landlord Approval</Text>
+            <Text style={[styles.headerTitle, { fontFamily: 'Inter-Bold' }]}>Waiting for Landlord Approval</Text>
             <Text style={[styles.headerSubtitle, { fontFamily: 'Inter-Regular' }]}>
-              Your request has been sent to the landlord/property manager for verification. Once approved, your tenant dashboard will be activated for this property.
+              Your request is queued for verification. Once your landlord approves, your dashboard and services will unlock.
             </Text>
           </Animated.View>
-        </View>
+        </LinearGradient>
 
         <View style={styles.content}>
-          <Animated.View entering={FadeInUp.delay(150).duration(500)}>
-            <Text style={[styles.sectionLabel, { color: colors.textMuted, fontFamily: 'Inter-SemiBold' }]}>STATUS TIMELINE</Text>
+          <Animated.View entering={FadeInUp.delay(120).duration(500)}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={[styles.sectionLabel, { color: colors.textMuted, fontFamily: 'Inter-SemiBold' }]}>STATUS TRACKER</Text>
+              <Text style={[styles.sectionCount, { color: '#D97706', fontFamily: 'Inter-SemiBold' }]}>Step 4 of 5</Text>
+            </View>
+            
             <View style={[styles.timelineCard, { backgroundColor: colors.surface, borderColor: colors.border }, SHADOWS.card]}>
               {TIMELINE.map((step, i) => {
                 const Icon = step.icon;
@@ -75,28 +92,28 @@ export default function LandlordApprovalWaitingScreen() {
                       <View style={[
                         styles.timelineDot,
                         {
-                          backgroundColor: isDone ? colors.success : isCurrent ? colors.warning : colors.surfaceSecondary,
-                          borderColor: isDone ? colors.success : isCurrent ? colors.warning : colors.border,
+                          backgroundColor: isDone ? '#059669' : isCurrent ? '#D97706' : colors.surfaceSecondary,
+                          borderColor: isDone ? '#059669' : isCurrent ? '#D97706' : colors.border,
                         },
                       ]}>
                         <Icon size={14} color={isDone || isCurrent ? '#FFFFFF' : colors.textMuted} />
                       </View>
                       {i < TIMELINE.length - 1 ? (
-                        <View style={[styles.timelineConnector, { backgroundColor: isDone ? colors.success : colors.borderLight }]} />
+                        <View style={[styles.timelineConnector, { backgroundColor: isDone ? '#059669' : colors.borderLight }]} />
                       ) : null}
                     </View>
-                    <View style={{ flex: 1, paddingBottom: i < TIMELINE.length - 1 ? 18 : 0 }}>
+                    <View style={{ flex: 1, paddingBottom: i < TIMELINE.length - 1 ? 16 : 0, paddingTop: 4 }}>
                       <Text style={[
                         styles.timelineLabel,
                         {
                           color: isFuture ? colors.textMuted : colors.textPrimary,
-                          fontFamily: isCurrent ? 'Inter-SemiBold' : 'Inter-Medium',
+                          fontFamily: isCurrent ? 'Inter-Bold' : isDone ? 'Inter-SemiBold' : 'Inter-Medium',
                         },
                       ]}>
                         {step.label}
                       </Text>
                       {isCurrent ? (
-                        <Text style={[styles.timelineSubLabel, { color: colors.warning, fontFamily: 'Inter-Regular' }]}>In progress...</Text>
+                        <Text style={[styles.timelineSubLabel, { color: '#D97706', fontFamily: 'Inter-Medium' }]}>Verification in progress</Text>
                       ) : null}
                     </View>
                   </View>
@@ -106,20 +123,20 @@ export default function LandlordApprovalWaitingScreen() {
           </Animated.View>
 
           {property && (
-            <Animated.View entering={FadeInUp.delay(250).duration(500)} style={[styles.propCard, { backgroundColor: colors.surface, borderColor: colors.border }, SHADOWS.card]}>
+            <Animated.View entering={FadeInUp.delay(220).duration(500)} style={[styles.propCard, { backgroundColor: colors.surface, borderColor: colors.border }, SHADOWS.card]}>
               <View style={styles.propCardHeader}>
                 <View style={[styles.propCardIcon, { backgroundColor: colors.primaryGlow }]}>
-                  <Building2 size={20} color={colors.primary} />
+                  <Building2 size={22} color={colors.primary} />
                 </View>
-                <View style={{ flex: 1 }}>
+                <View style={{ flex: 1, paddingRight: 8 }}>
                   <Text style={[styles.propCardName, { color: colors.textPrimary, fontFamily: 'Inter-Bold' }]}>{property.name}</Text>
-                  <Text style={[styles.propCardUnit, { color: colors.textSecondary, fontFamily: 'Inter-Regular' }]}>
+                  <Text style={[styles.propCardUnit, { color: colors.textSecondary, fontFamily: 'Inter-Medium' }]}>
                     Unit: {property.selectedUnit || 'N/A'}
                   </Text>
                 </View>
-                <View style={[styles.statusBadge, { backgroundColor: colors.warningLight }]}>
-                  <Clock size={12} color={colors.warning} />
-                  <Text style={[styles.statusBadgeText, { color: colors.warning, fontFamily: 'Inter-SemiBold' }]}>Pending</Text>
+                <View style={[styles.statusBadge, { backgroundColor: '#FEF3C7', borderColor: '#FDE68A' }]}>
+                  <Clock size={12} color="#D97706" />
+                  <Text style={[styles.statusBadgeText, { color: "#D97706", fontFamily: 'Inter-Bold' }]}>Pending</Text>
                 </View>
               </View>
 
@@ -128,51 +145,38 @@ export default function LandlordApprovalWaitingScreen() {
               <DetailRow icon={<User size={14} color={colors.textMuted} />} label="Landlord" value={property.landlordName} colors={colors} />
               <DetailRow icon={<Users size={14} color={colors.textMuted} />} label="Property Manager" value={property.propertyManagerName} colors={colors} />
               <DetailRow icon={<Send size={14} color={colors.textMuted} />} label="Request ID" value={requestId} colors={colors} />
-              <DetailRow icon={<Clock size={14} color={colors.textMuted} />} label="Submitted" value={submittedTime} colors={colors} />
+              <DetailRow icon={<Clock size={14} color={colors.textMuted} />} label="Submitted On" value={submittedTime} colors={colors} />
             </Animated.View>
           )}
 
-          <Animated.View entering={FadeInUp.delay(350).duration(500)} style={[styles.demoNote, { backgroundColor: colors.warningLight, borderColor: colors.warning + '40' }]}>
-            <View style={[styles.demoNoteIcon, { backgroundColor: colors.warning }]}>
-              <Info size={16} color="#FFFFFF" />
+          <Animated.View entering={FadeInUp.delay(300).duration(500)} style={[styles.demoNote, { backgroundColor: colors.surface, borderColor: colors.border }, SHADOWS.soft]}>
+            <View style={[styles.demoNoteIcon, { backgroundColor: '#FEF3C7' }]}>
+              <Info size={18} color="#D97706" />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.demoNoteTitle, { color: colors.warning, fontFamily: 'Inter-Bold' }]}>Demo Mode</Text>
-              <Text style={[styles.demoNoteDesc, { color: colors.warning, fontFamily: 'Inter-Regular' }]}>
-                In a real application, the tenant would wait until the landlord approves this request. For this mock version, you can continue directly to the dashboard.
+              <Text style={[styles.demoNoteTitle, { color: colors.textPrimary, fontFamily: 'Inter-Bold' }]}>Demo Prototype Notice</Text>
+              <Text style={[styles.demoNoteDesc, { color: colors.textSecondary, fontFamily: 'Inter-Regular' }]}>
+                In production, you'll receive a push notification when your landlord confirms. For previewing the app now, you can proceed directly.
               </Text>
             </View>
           </Animated.View>
 
           <Pressable onPress={handleContinue} style={({ pressed }) => [{ opacity: pressed ? 0.92 : 1, transform: [{ scale: pressed ? 0.985 : 1 }] }]}>
-            <LinearGradientWrapper>
-              <Text style={[styles.continueText, { fontFamily: 'Inter-SemiBold' }]}>Continue to Dashboard Mock Mode</Text>
-              <ArrowRight size={17} color="#FFFFFF" />
-            </LinearGradientWrapper>
+            <LinearGradient colors={['#134E48', '#0D9488']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.continueBtn}>
+              <Text style={[styles.continueText, { fontFamily: 'Inter-Bold' }]}>Explore Tenant Dashboard</Text>
+              <ArrowRight size={18} color="#FFFFFF" />
+            </LinearGradient>
           </Pressable>
 
-          <Pressable onPress={handleChangeProperty} style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1 }]}>
-            <View style={[styles.changeBtn, { borderColor: colors.border }]}>
-              <RefreshCw size={16} color={colors.textSecondary} />
+          <Pressable onPress={handleChangeProperty} style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.985 : 1 }] }]}>
+            <View style={[styles.changeBtn, { borderColor: colors.border, backgroundColor: colors.surface }]}>
+              <RefreshCw size={15} color={colors.textSecondary} />
               <Text style={[styles.changeBtnText, { color: colors.textSecondary, fontFamily: 'Inter-SemiBold' }]}>Change Selected Property</Text>
             </View>
           </Pressable>
-
-          <Text style={[styles.footnote, { color: colors.textMuted, fontFamily: 'Inter-Regular' }]}>
-            This approval step will be connected to the landlord dashboard when backend integration is added.
-          </Text>
         </View>
       </ScrollView>
     </View>
-  );
-}
-
-function LinearGradientWrapper({ children }: { children: React.ReactNode }) {
-  const { LinearGradient } = require('expo-linear-gradient');
-  return (
-    <LinearGradient colors={['#1E6B5A', '#0D9488']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.continueBtn}>
-      {children}
-    </LinearGradient>
   );
 }
 
@@ -181,8 +185,8 @@ function DetailRow({ icon, label, value, colors }: { icon: React.ReactNode; labe
     <View style={styles.detailRow}>
       <View style={[styles.detailIcon, { backgroundColor: colors.surfaceSecondary }]}>{icon}</View>
       <View style={{ flex: 1 }}>
-        <Text style={[styles.detailLabel, { color: colors.textMuted, fontFamily: 'Inter-Regular' }]}>{label}</Text>
-        <Text style={[styles.detailValue, { color: colors.textPrimary, fontFamily: 'Inter-Medium' }]}>{value}</Text>
+        <Text style={[styles.detailLabel, { color: colors.textMuted, fontFamily: 'Inter-Medium' }]}>{label}</Text>
+        <Text style={[styles.detailValue, { color: colors.textPrimary, fontFamily: 'Inter-SemiBold' }]}>{value}</Text>
       </View>
     </View>
   );
@@ -191,52 +195,55 @@ function DetailRow({ icon, label, value, colors }: { icon: React.ReactNode; labe
 const styles = StyleSheet.create({
   screen: { flex: 1 },
   headerSection: {
-    backgroundColor: '#D97706',
-    paddingHorizontal: 24,
+    paddingHorizontal: 22,
     paddingBottom: 32,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
     overflow: 'hidden',
+    position: 'relative',
   },
+  headerOrb1: { position: 'absolute', top: -30, right: -30, width: 150, height: 150, borderRadius: 75, backgroundColor: 'rgba(255,255,255,0.12)' },
+  headerOrb2: { position: 'absolute', bottom: -20, left: -20, width: 100, height: 100, borderRadius: 50, backgroundColor: 'rgba(255,255,255,0.08)' },
   headerContent: { alignItems: 'center' },
-  headerIconWrap: { width: 68, height: 68, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.25)', marginBottom: 16 },
+  headerIconWrap: { width: 64, height: 64, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.22)', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.3)', marginBottom: 14 },
   headerTitle: { fontSize: 22, color: '#FFFFFF', textAlign: 'center', letterSpacing: -0.3 },
-  headerSubtitle: { fontSize: 14, color: 'rgba(255,255,255,0.85)', textAlign: 'center', marginTop: 8, lineHeight: 20 },
+  headerSubtitle: { fontSize: 13.5, color: 'rgba(255,255,255,0.9)', textAlign: 'center', marginTop: 8, lineHeight: 19, paddingHorizontal: 12 },
 
-  content: { paddingHorizontal: 20, paddingTop: 24 },
-  sectionLabel: { fontSize: 11, letterSpacing: 1.2, marginBottom: 14, marginLeft: 2 },
+  content: { paddingHorizontal: 18, paddingTop: 20 },
+  sectionHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, paddingHorizontal: 4 },
+  sectionLabel: { fontSize: 11.5, letterSpacing: 1 },
+  sectionCount: { fontSize: 11.5 },
 
-  timelineCard: { borderRadius: 20, borderWidth: 1, padding: 20 },
+  timelineCard: { borderRadius: 18, borderWidth: 1, padding: 18 },
   timelineItem: { flexDirection: 'row' },
   timelineLeft: { alignItems: 'center', marginRight: 14 },
-  timelineDot: { width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5 },
-  timelineConnector: { width: 2, flex: 1, minHeight: 22, marginTop: 4 },
-  timelineLabel: { fontSize: 14, lineHeight: 20 },
-  timelineSubLabel: { fontSize: 11, marginTop: 3 },
+  timelineDot: { width: 30, height: 30, borderRadius: 10, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5 },
+  timelineConnector: { width: 2, flex: 1, minHeight: 20, marginVertical: 3 },
+  timelineLabel: { fontSize: 13.5, lineHeight: 18 },
+  timelineSubLabel: { fontSize: 11, marginTop: 2 },
 
-  propCard: { borderRadius: 20, borderWidth: 1, padding: 18, marginTop: 16, marginBottom: 16 },
+  propCard: { borderRadius: 18, borderWidth: 1, padding: 16, marginTop: 18, marginBottom: 14 },
   propCardHeader: { flexDirection: 'row', alignItems: 'flex-start' },
   propCardIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: 12 },
   propCardName: { fontSize: 16 },
-  propCardUnit: { fontSize: 13, marginTop: 4 },
-  statusBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 12 },
-  statusBadgeText: { fontSize: 11 },
-  propDivider: { height: 1, marginVertical: 14 },
-  detailRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  detailIcon: { width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginRight: 11 },
+  propCardUnit: { fontSize: 13, marginTop: 3 },
+  statusBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 9, paddingVertical: 4, borderRadius: 8, borderWidth: 1 },
+  statusBadgeText: { fontSize: 10.5 },
+  propDivider: { height: 1, marginVertical: 12 },
+  detailRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  detailIcon: { width: 28, height: 28, borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginRight: 10 },
   detailLabel: { fontSize: 11 },
-  detailValue: { fontSize: 14, marginTop: 2 },
+  detailValue: { fontSize: 13.5, marginTop: 1 },
 
-  demoNote: { flexDirection: 'row', gap: 12, borderRadius: 16, borderWidth: 1.5, padding: 16, marginBottom: 20 },
+  demoNote: { flexDirection: 'row', gap: 12, borderRadius: 16, borderWidth: 1, padding: 14, marginBottom: 18 },
   demoNoteIcon: { width: 36, height: 36, borderRadius: 11, alignItems: 'center', justifyContent: 'center' },
-  demoNoteTitle: { fontSize: 14 },
-  demoNoteDesc: { fontSize: 13, marginTop: 4, lineHeight: 19 },
+  demoNoteTitle: { fontSize: 13.5 },
+  demoNoteDesc: { fontSize: 12, marginTop: 3, lineHeight: 17 },
 
   continueBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 14, paddingVertical: 16 },
   continueText: { color: '#FFFFFF', fontSize: 15 },
 
-  changeBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 14, paddingVertical: 14, borderWidth: 1.5, marginTop: 12 },
-  changeBtnText: { fontSize: 14 },
-
-  footnote: { fontSize: 12, textAlign: 'center', marginTop: 20, lineHeight: 17, paddingHorizontal: 20 },
+  changeBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 14, paddingVertical: 14, borderWidth: 1, marginTop: 10 },
+  changeBtnText: { fontSize: 13.5 },
 });
+

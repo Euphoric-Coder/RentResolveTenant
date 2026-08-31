@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Pressable, TextInput, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Pressable, TextInput, StyleSheet, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import {
   Building2, MapPin, User, Users, CheckCircle, ArrowRight,
-  Calendar, Wallet, Shield, FileText, Tag,
+  Calendar, Wallet, Shield, FileText, Tag, Check,
 } from 'lucide-react-native';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -22,6 +24,7 @@ const VERIFICATION_LABELS: Record<string, string> = {
 export default function PropertyConfirmationScreen() {
   const { colors } = useTheme();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { setSelectedProperty } = useAuth();
 
   const [property, setProperty] = useState<SelectedProperty | null>(null);
@@ -73,7 +76,7 @@ export default function PropertyConfirmationScreen() {
       <View style={[styles.screen, { backgroundColor: colors.background }]}>
         <ScreenHeader title="Confirm Property" />
         <View style={styles.missingState}>
-          <Building2 size={32} color={colors.textMuted} />
+          <Building2 size={36} color={colors.textMuted} />
           <Text style={[styles.missingText, { color: colors.textSecondary, fontFamily: 'Inter-Medium' }]}>
             No property selected. Please go back and choose a property.
           </Text>
@@ -89,14 +92,18 @@ export default function PropertyConfirmationScreen() {
     <View style={[styles.screen, { backgroundColor: colors.background }]}>
       <ScreenHeader title="Confirm Property" />
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 100 }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: insets.bottom + 110 }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.content}>
           <Animated.View entering={FadeInDown.duration(400)} style={[styles.propSummaryCard, { backgroundColor: colors.surface, borderColor: colors.border }, SHADOWS.card]}>
             <View style={styles.propSummaryHeader}>
               <View style={[styles.propSummaryIcon, { backgroundColor: colors.primaryGlow }]}>
-                <Building2 size={22} color={colors.primary} />
+                <Building2 size={24} color={colors.primary} />
               </View>
-              <View style={{ flex: 1 }}>
+              <View style={{ flex: 1, paddingRight: 4 }}>
                 <Text style={[styles.propSummaryName, { color: colors.textPrimary, fontFamily: 'Inter-Bold' }]}>{property.name}</Text>
                 <View style={styles.propSummaryAddrRow}>
                   <MapPin size={12} color={colors.textMuted} />
@@ -115,8 +122,11 @@ export default function PropertyConfirmationScreen() {
           </Animated.View>
 
           {availableUnits.length > 0 && (
-            <Animated.View entering={FadeInUp.delay(100).duration(400)}>
-              <Text style={[styles.fieldLabel, { color: colors.textSecondary, fontFamily: 'Inter-SemiBold' }]}>Select Your Unit</Text>
+            <Animated.View entering={FadeInUp.delay(100).duration(400)} style={styles.sectionBlock}>
+              <View style={styles.sectionHeaderRow}>
+                <Text style={[styles.fieldLabel, { color: colors.textPrimary, fontFamily: 'Inter-SemiBold' }]}>Select Your Unit</Text>
+                <Text style={[styles.sectionCount, { color: colors.textMuted, fontFamily: 'Inter-Regular' }]}>Required</Text>
+              </View>
               <View style={styles.unitsGrid}>
                 {availableUnits.map((unit) => {
                   const active = selectedUnit === unit;
@@ -126,10 +136,14 @@ export default function PropertyConfirmationScreen() {
                       onPress={() => setSelectedUnit(unit)}
                       style={[
                         styles.unitOption,
-                        { backgroundColor: active ? colors.primaryGlow : colors.surface, borderColor: active ? colors.primary : colors.border },
+                        {
+                          backgroundColor: active ? colors.primaryGlow : colors.surface,
+                          borderColor: active ? colors.primary : colors.border,
+                        },
                       ]}
                     >
-                      <Text style={[styles.unitOptionText, { color: active ? colors.primary : colors.textSecondary, fontFamily: active ? 'Inter-SemiBold' : 'Inter-Medium' }]}>{unit}</Text>
+                      {active ? <Check size={14} color={colors.primary} style={{ marginRight: 6 }} /> : null}
+                      <Text style={[styles.unitOptionText, { color: active ? colors.primary : colors.textSecondary, fontFamily: active ? 'Inter-Bold' : 'Inter-Medium' }]}>{unit}</Text>
                     </Pressable>
                   );
                 })}
@@ -137,89 +151,80 @@ export default function PropertyConfirmationScreen() {
             </Animated.View>
           )}
 
-          <Animated.View entering={FadeInUp.delay(150).duration(400)}>
-            <Text style={[styles.sectionLabel, { color: colors.textMuted, fontFamily: 'Inter-SemiBold' }]}>RENTAL DETAILS</Text>
+          <Animated.View entering={FadeInUp.delay(150).duration(400)} style={styles.sectionBlock}>
+            <Text style={[styles.sectionLabel, { color: colors.textMuted, fontFamily: 'Inter-SemiBold' }]}>TENANCY & LEASE DETAILS</Text>
 
-            <View style={[styles.inputGroup, { marginBottom: 14 }]}>
-              <Text style={[styles.fieldLabel, { color: colors.textSecondary, fontFamily: 'Inter-SemiBold' }]}>Lease Start Date</Text>
+            <View style={styles.inputGroup}>
+              <Text style={[styles.fieldLabel, { color: colors.textSecondary, fontFamily: 'Inter-Medium' }]}>Lease Start Date</Text>
               <View style={[styles.inputRow, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
                 <Calendar size={16} color={colors.textMuted} />
-                <TextInput style={[styles.input, { color: colors.textPrimary, fontFamily: 'Inter-Regular' }]} value={leaseStart} onChangeText={setLeaseStart} placeholder="YYYY-MM-DD" placeholderTextColor={colors.textMuted} />
+                <TextInput style={[styles.input, { color: colors.textPrimary, fontFamily: 'Inter-Medium' }]} value={leaseStart} onChangeText={setLeaseStart} placeholder="YYYY-MM-DD" placeholderTextColor={colors.textMuted} />
               </View>
             </View>
 
             <View style={styles.dualRow}>
               <View style={[styles.inputGroup, { flex: 1, marginRight: 10 }]}>
-                <Text style={[styles.fieldLabel, { color: colors.textSecondary, fontFamily: 'Inter-SemiBold' }]}>Monthly Rent (Rs.)</Text>
+                <Text style={[styles.fieldLabel, { color: colors.textSecondary, fontFamily: 'Inter-Medium' }]}>Monthly Rent (₹)</Text>
                 <View style={[styles.inputRow, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
                   <Wallet size={16} color={colors.textMuted} />
-                  <TextInput style={[styles.input, { color: colors.textPrimary, fontFamily: 'Inter-Regular' }]} value={monthlyRent} onChangeText={setMonthlyRent} placeholder="18000" placeholderTextColor={colors.textMuted} keyboardType="numeric" />
+                  <TextInput style={[styles.input, { color: colors.textPrimary, fontFamily: 'Inter-SemiBold' }]} value={monthlyRent} onChangeText={setMonthlyRent} placeholder="18000" placeholderTextColor={colors.textMuted} keyboardType="numeric" />
                 </View>
               </View>
               <View style={[styles.inputGroup, { flex: 1 }]}>
-                <Text style={[styles.fieldLabel, { color: colors.textSecondary, fontFamily: 'Inter-SemiBold' }]}>Security Deposit (Rs.)</Text>
+                <Text style={[styles.fieldLabel, { color: colors.textSecondary, fontFamily: 'Inter-Medium' }]}>Security Deposit (₹)</Text>
                 <View style={[styles.inputRow, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
                   <Shield size={16} color={colors.textMuted} />
-                  <TextInput style={[styles.input, { color: colors.textPrimary, fontFamily: 'Inter-Regular' }]} value={securityDeposit} onChangeText={setSecurityDeposit} placeholder="36000" placeholderTextColor={colors.textMuted} keyboardType="numeric" />
+                  <TextInput style={[styles.input, { color: colors.textPrimary, fontFamily: 'Inter-SemiBold' }]} value={securityDeposit} onChangeText={setSecurityDeposit} placeholder="36000" placeholderTextColor={colors.textMuted} keyboardType="numeric" />
                 </View>
               </View>
             </View>
 
-            <View style={[styles.inputGroup, { marginBottom: 14 }]}>
-              <Text style={[styles.fieldLabel, { color: colors.textSecondary, fontFamily: 'Inter-SemiBold' }]}>Note to Landlord</Text>
+            <View style={styles.inputGroup}>
+              <Text style={[styles.fieldLabel, { color: colors.textSecondary, fontFamily: 'Inter-Medium' }]}>Note to Landlord</Text>
               <View style={[styles.noteRow, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder }]}>
                 <FileText size={16} color={colors.textMuted} style={{ alignSelf: 'flex-start', marginTop: 12, marginLeft: 12 }} />
-                <TextInput style={[styles.noteInput, { color: colors.textPrimary, fontFamily: 'Inter-Regular' }]} value={tenantNote} onChangeText={setTenantNote} placeholder="Add a message for your landlord..." placeholderTextColor={colors.textMuted} multiline numberOfLines={4} textAlignVertical="top" />
+                <TextInput style={[styles.noteInput, { color: colors.textPrimary, fontFamily: 'Inter-Regular' }]} value={tenantNote} onChangeText={setTenantNote} placeholder="Add a note or message for your landlord..." placeholderTextColor={colors.textMuted} multiline numberOfLines={3} textAlignVertical="top" />
               </View>
             </View>
           </Animated.View>
 
-          <Animated.View entering={FadeInUp.delay(200).duration(400)}>
-            <Text style={[styles.sectionLabel, { color: colors.textMuted, fontFamily: 'Inter-SemiBold' }]}>CONFIRMATION</Text>
+          <Animated.View entering={FadeInUp.delay(200).duration(400)} style={styles.sectionBlock}>
+            <Text style={[styles.sectionLabel, { color: colors.textMuted, fontFamily: 'Inter-SemiBold' }]}>CONFIRMATION CHECKS</Text>
 
-            <Pressable style={styles.checkboxRow} onPress={() => setConfirmStay(!confirmStay)}>
+            <Pressable style={[styles.checkboxCard, { backgroundColor: colors.surface, borderColor: confirmStay ? colors.primary : colors.border }]} onPress={() => setConfirmStay(!confirmStay)}>
               <View style={[styles.checkbox, { backgroundColor: confirmStay ? colors.primary : 'transparent', borderColor: confirmStay ? colors.primary : colors.inputBorder }]}>
-                {confirmStay ? <CheckCircle size={16} color="#FFFFFF" /> : null}
+                {confirmStay ? <Check size={14} color="#FFFFFF" /> : null}
               </View>
               <Text style={[styles.checkboxText, { color: colors.textPrimary, fontFamily: 'Inter-Regular' }]}>
-                I confirm that I am currently staying at this rental place.
+                I confirm that I am currently staying at this rental unit/property.
               </Text>
             </Pressable>
 
-            <Pressable style={styles.checkboxRow} onPress={() => setConfirmVerify(!confirmVerify)}>
+            <Pressable style={[styles.checkboxCard, { backgroundColor: colors.surface, borderColor: confirmVerify ? colors.primary : colors.border }]} onPress={() => setConfirmVerify(!confirmVerify)}>
               <View style={[styles.checkbox, { backgroundColor: confirmVerify ? colors.primary : 'transparent', borderColor: confirmVerify ? colors.primary : colors.inputBorder }]}>
-                {confirmVerify ? <CheckCircle size={16} color="#FFFFFF" /> : null}
+                {confirmVerify ? <Check size={14} color="#FFFFFF" /> : null}
               </View>
               <Text style={[styles.checkboxText, { color: colors.textPrimary, fontFamily: 'Inter-Regular' }]}>
-                I understand that the landlord/property manager may verify my request.
+                I understand that the landlord will verify my request before dashboard activation.
               </Text>
             </Pressable>
           </Animated.View>
         </View>
       </ScrollView>
 
-      <View style={[styles.bottomBar, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+      <View style={[styles.bottomBar, { backgroundColor: colors.surface, borderTopColor: colors.border, paddingBottom: Math.max(insets.bottom, 16) + 8 }]}>
         <Pressable
           onPress={handleSubmit}
           disabled={!canSubmit}
-          style={({ pressed }) => [{ opacity: !canSubmit ? 0.5 : pressed ? 0.9 : 1, transform: [{ scale: pressed ? 0.985 : 1 }] }]}
+          style={({ pressed }) => [{ opacity: !canSubmit ? 0.5 : pressed ? 0.9 : 1, transform: [{ scale: pressed && canSubmit ? 0.985 : 1 }] }]}
         >
-          <LinearGradientWrapper active={canSubmit}>
-            <Text style={[styles.submitText, { fontFamily: 'Inter-SemiBold' }]}>Send Request to Landlord</Text>
-            <ArrowRight size={17} color="#FFFFFF" />
-          </LinearGradientWrapper>
+          <LinearGradient colors={canSubmit ? ['#134E48', '#0D9488'] : ['#94A3B8', '#64748B']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.submitBtn}>
+            <Text style={[styles.submitText, { fontFamily: 'Inter-Bold' }]}>Send Request to Landlord</Text>
+            <ArrowRight size={18} color="#FFFFFF" />
+          </LinearGradient>
         </Pressable>
       </View>
     </View>
-  );
-}
-
-function LinearGradientWrapper({ children, active }: { children: React.ReactNode; active: boolean }) {
-  const { LinearGradient } = require('expo-linear-gradient');
-  return (
-    <LinearGradient colors={active ? ['#1E6B5A', '#0D9488'] : ['#CBD5E1', '#94A3B8']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.submitBtn}>
-      {children}
-    </LinearGradient>
   );
 }
 
@@ -228,8 +233,8 @@ function SummaryRow({ icon, label, value, colors }: { icon: React.ReactNode; lab
     <View style={styles.summaryRow}>
       <View style={[styles.summaryIcon, { backgroundColor: colors.surfaceSecondary }]}>{icon}</View>
       <View style={{ flex: 1 }}>
-        <Text style={[styles.summaryLabel, { color: colors.textMuted, fontFamily: 'Inter-Regular' }]}>{label}</Text>
-        <Text style={[styles.summaryValue, { color: colors.textPrimary, fontFamily: 'Inter-Medium' }]}>{value}</Text>
+        <Text style={[styles.summaryLabel, { color: colors.textMuted, fontFamily: 'Inter-Medium' }]}>{label}</Text>
+        <Text style={[styles.summaryValue, { color: colors.textPrimary, fontFamily: 'Inter-SemiBold' }]}>{value}</Text>
       </View>
     </View>
   );
@@ -237,43 +242,47 @@ function SummaryRow({ icon, label, value, colors }: { icon: React.ReactNode; lab
 
 const styles = StyleSheet.create({
   screen: { flex: 1 },
-  content: { paddingHorizontal: 20, paddingTop: 20 },
-  propSummaryCard: { borderRadius: 20, borderWidth: 1, padding: 18, marginBottom: 24 },
+  content: { paddingHorizontal: 18, paddingTop: 16 },
+  propSummaryCard: { borderRadius: 18, borderWidth: 1, padding: 16, marginBottom: 20 },
   propSummaryHeader: { flexDirection: 'row', alignItems: 'flex-start' },
-  propSummaryIcon: { width: 46, height: 46, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: 13 },
-  propSummaryName: { fontSize: 17 },
-  propSummaryAddrRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 5 },
-  propSummaryAddr: { fontSize: 13, flex: 1 },
-  summaryDivider: { height: 1, marginVertical: 14 },
-  summaryRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  summaryIcon: { width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginRight: 11 },
+  propSummaryIcon: { width: 46, height: 46, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: 12 },
+  propSummaryName: { fontSize: 16.5 },
+  propSummaryAddrRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 4 },
+  propSummaryAddr: { fontSize: 12.5, flex: 1 },
+  summaryDivider: { height: 1, marginVertical: 12 },
+  summaryRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  summaryIcon: { width: 28, height: 28, borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginRight: 10 },
   summaryLabel: { fontSize: 11 },
-  summaryValue: { fontSize: 14, marginTop: 2 },
+  summaryValue: { fontSize: 13.5, marginTop: 1 },
 
-  fieldLabel: { fontSize: 13, marginBottom: 8 },
-  sectionLabel: { fontSize: 11, letterSpacing: 1.2, marginBottom: 14, marginLeft: 2 },
+  sectionBlock: { marginBottom: 20 },
+  sectionHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, paddingHorizontal: 2 },
+  sectionCount: { fontSize: 11.5 },
+  fieldLabel: { fontSize: 12.5, marginBottom: 7 },
+  sectionLabel: { fontSize: 11, letterSpacing: 1, marginBottom: 12, marginLeft: 2 },
 
-  unitsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 24 },
-  unitOption: { paddingHorizontal: 18, paddingVertical: 12, borderRadius: 14, borderWidth: 1.5 },
-  unitOptionText: { fontSize: 14 },
+  unitsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  unitOption: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12, borderWidth: 1.5 },
+  unitOptionText: { fontSize: 13.5 },
 
-  inputGroup: {},
-  inputRow: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 4, gap: 10 },
-  input: { flex: 1, fontSize: 15, paddingVertical: 12 },
-  dualRow: { flexDirection: 'row', marginBottom: 14 },
-  noteRow: { flexDirection: 'row', borderWidth: 1, borderRadius: 12, paddingVertical: 4, paddingRight: 12 },
-  noteInput: { flex: 1, fontSize: 14, paddingVertical: 10, paddingHorizontal: 10, minHeight: 90 },
+  inputGroup: { marginBottom: 14 },
+  inputRow: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 2, gap: 10 },
+  input: { flex: 1, fontSize: 14.5, paddingVertical: 11 },
+  dualRow: { flexDirection: 'row' },
+  noteRow: { flexDirection: 'row', borderWidth: 1, borderRadius: 12, paddingVertical: 2, paddingRight: 10 },
+  noteInput: { flex: 1, fontSize: 13.5, paddingVertical: 10, paddingHorizontal: 10, minHeight: 80 },
 
-  checkboxRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginBottom: 16 },
-  checkbox: { width: 22, height: 22, borderRadius: 7, borderWidth: 2, alignItems: 'center', justifyContent: 'center', marginTop: 1 },
-  checkboxText: { flex: 1, fontSize: 14, lineHeight: 20 },
+  checkboxCard: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, padding: 14, borderRadius: 14, borderWidth: 1, marginBottom: 10 },
+  checkbox: { width: 22, height: 22, borderRadius: 7, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center', marginTop: 1 },
+  checkboxText: { flex: 1, fontSize: 13, lineHeight: 18 },
 
-  bottomBar: { position: 'absolute', bottom: 0, left: 0, right: 0, borderTopWidth: 1, paddingHorizontal: 20, paddingVertical: 16, paddingBottom: 24 },
+  bottomBar: { position: 'absolute', bottom: 0, left: 0, right: 0, borderTopWidth: 1, paddingHorizontal: 18, paddingTop: 12 },
   submitBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 14, paddingVertical: 16 },
   submitText: { color: '#FFFFFF', fontSize: 15 },
 
-  missingState: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 40 },
+  missingState: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 36 },
   missingText: { fontSize: 14, textAlign: 'center', marginTop: 14, marginBottom: 20, lineHeight: 20 },
   missingBtn: { paddingHorizontal: 20, paddingVertical: 12, borderRadius: 12 },
   missingBtnText: { fontSize: 14 },
 });
+
