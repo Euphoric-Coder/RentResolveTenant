@@ -100,42 +100,50 @@ export default function TenantPlaceSelectionScreen() {
       >
         {/* Top Hero Gradient with Safe Island Clearance */}
         <LinearGradient
-          colors={['#05231F', '#0B423A', '#0D9488']}
+          colors={['#041D1A', '#08332D', '#0D9488']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           className="relative overflow-hidden rounded-b-[36px] px-6 pb-9"
           style={{
-            paddingTop: Math.max(insets.top, Platform.OS === 'ios' ? 54 : 28) + 14,
+            paddingTop: Math.max(insets.top, Platform.OS === 'ios' ? 56 : 32) + 16,
           }}
         >
           {/* Ambient Lighting Orbs */}
           <View className="absolute -top-[50px] -right-[40px] h-[220px] w-[220px] rounded-full bg-teal-300/10 blur-3xl" />
-          <View className="absolute top-[25%] -left-[40px] h-[150px] w-[150px] rounded-full bg-emerald-400/10 blur-2xl" />
+          <View className="absolute top-[20%] -left-[40px] h-[150px] w-[150px] rounded-full bg-emerald-400/10 blur-2xl" />
 
           <Animated.View entering={FadeInDown.duration(600)} className="items-center">
             {/* Step Counter Badge */}
-            <View className="mb-4 flex-row items-center gap-1.5 rounded-full border border-teal-300/30 bg-white/[0.12] px-3.5 py-1.5 shadow-sm">
+            <View className="mb-4 flex-row items-center gap-1.5 rounded-full border border-teal-300/30 bg-white/10 px-3.5 py-1.5 shadow-sm">
               <Sparkles size={12} color="#5EEAD4" />
               <Text className="text-[11.5px] tracking-[0.3px] text-teal-100" style={{ fontFamily: 'Inter-SemiBold' }}>
                 Step 1 of 3 • Onboarding
               </Text>
             </View>
 
-            {/* Icon Wrapper */}
-            <View className="mb-3.5 h-[58px] w-[58px] items-center justify-center rounded-[20px] border border-white/30 bg-white/15 shadow-sm">
-              <Building2 size={28} color="#FFFFFF" strokeWidth={2.2} />
+            {/* Glowing Icon Frame */}
+            <View className="relative mb-4 items-center justify-center">
+              <View className="absolute -inset-1.5 rounded-[24px] bg-teal-300/30 blur-lg" />
+              <LinearGradient
+                colors={['rgba(255, 255, 255, 0.28)', 'rgba(255, 255, 255, 0.12)']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                className="h-[64px] w-[64px] items-center justify-center rounded-[22px] border border-white/40 shadow-md"
+              >
+                <Building2 size={30} color="#FFFFFF" strokeWidth={2.3} />
+              </LinearGradient>
             </View>
 
             {/* Main Hero Typography */}
             <Text
-              className="text-center text-[24px] tracking-[-0.4px] text-white"
+              className="text-center text-[24px] tracking-[-0.5px] text-white"
               style={{ fontFamily: 'Inter-Bold' }}
             >
               Connect Your Rental Place
             </Text>
 
             <Text
-              className="mt-2 max-w-[320px] text-center text-[13px] leading-[20px] text-teal-50/85"
+              className="mt-2.5 mb-3 max-w-[320px] text-center text-[13px] leading-[20px] text-teal-50/85"
               style={{ fontFamily: 'Inter-Regular' }}
             >
               Choose how to locate and bind your tenancy profile so your landlord can verify and approve you.
@@ -144,11 +152,11 @@ export default function TenantPlaceSelectionScreen() {
         </LinearGradient>
 
         {/* Main Content Area */}
-        <View className="px-[18px] pt-4.5">
+        <View className="px-[18px] pt-6">
           {/* Tenant Profile Card */}
           <Animated.View
             entering={FadeInUp.delay(120).duration(500)}
-            className="mb-5.5 overflow-hidden rounded-[22px] border"
+            className="mb-6 overflow-hidden rounded-[22px] border"
             style={{
               backgroundColor: colors.surface,
               borderColor: colors.border,
@@ -162,7 +170,7 @@ export default function TenantPlaceSelectionScreen() {
             {/* Header / Avatar Row */}
             <View className="flex-row items-center p-4">
               <View
-                className="mr-3.5 h-[48px] w-[48px] shrink-0 items-center justify-center rounded-[16px]"
+                className="mr-3.5 h-[46px] w-[46px] shrink-0 items-center justify-center rounded-[15px]"
                 style={{ backgroundColor: colors.primaryGlow }}
               >
                 <User size={22} color={colors.primary} strokeWidth={2.2} />
@@ -171,7 +179,7 @@ export default function TenantPlaceSelectionScreen() {
               <View className="min-w-0 flex-1 justify-center pr-2">
                 <Text
                   numberOfLines={1}
-                  className="text-[17px] tracking-[-0.2px]"
+                  className="text-[16.5px] tracking-[-0.2px]"
                   style={{
                     color: colors.textPrimary,
                     fontFamily: 'Inter-Bold',
@@ -180,7 +188,7 @@ export default function TenantPlaceSelectionScreen() {
                   {user?.name || 'Aarav Sharma'}
                 </Text>
                 <Text
-                  className="mt-0.5 text-[12.5px]"
+                  className="mt-0.5 text-[12px]"
                   style={{
                     color: colors.textMuted,
                     fontFamily: 'Inter-Medium',
@@ -233,8 +241,8 @@ export default function TenantPlaceSelectionScreen() {
           </Animated.View>
 
           {/* Section Header */}
-          <View className="mb-3 flex-row items-center justify-between px-1">
-            <View className="flex-row items-center gap-2">
+          <View className="mb-3.5 flex-row items-center justify-between px-1">
+            <View className="flex-row items-center gap-1.5">
               <View className="h-2 w-2 rounded-full bg-teal-500" />
               <Text
                 className="text-[11.5px] tracking-[0.9px]"
@@ -354,6 +362,7 @@ export default function TenantPlaceSelectionScreen() {
             })}
           </View>
         </View>
+
       </ScrollView>
 
       {/* Invitation Code Modal */}
