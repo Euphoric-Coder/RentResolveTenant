@@ -1,19 +1,18 @@
 import { useState } from 'react';
-import { View, Text, ScrollView, Pressable, TextInput, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Pressable, TextInput } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import {
   Search, Building2, User, Users, MapPin, ArrowRight,
-  HelpCircle, FileEdit, X, Sparkles,
+  HelpCircle, FileEdit, X, Sparkles, Home,
 } from 'lucide-react-native';
 import { useTheme } from '@/context/ThemeContext';
 import { mockNearbyProperties, NearbyProperty, SelectedProperty } from '@/data/mockData';
 import { ScreenHeader } from '@/components/ScreenHeader';
-import { SHADOWS } from '@/constants/theme';
 
 export default function PropertySearchScreen() {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
@@ -60,20 +59,33 @@ export default function PropertySearchScreen() {
   };
 
   return (
-    <View style={[styles.screen, { backgroundColor: colors.background }]}>
+    <View className="flex-1" style={{ backgroundColor: colors.background }}>
       <ScreenHeader title="Search Property" />
 
       <ScrollView
-        contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
+        contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, 20) + 36 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.content}>
+        <View className="px-[18px] pt-3">
+          {/* Modern Search Bar */}
           <Animated.View entering={FadeInDown.duration(300)}>
-            <View style={[styles.searchBar, { backgroundColor: colors.surface, borderColor: colors.border }, SHADOWS.soft]}>
-              <Search size={18} color={colors.primary} />
+            <View
+              className="flex-row items-center rounded-[18px] border px-3.5 mb-4 shadow-sm"
+              style={{
+                backgroundColor: colors.surface,
+                borderColor: query ? colors.primary : colors.border,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: isDark ? 0.25 : 0.04,
+                shadowRadius: 6,
+                elevation: 2,
+              }}
+            >
+              <Search size={18} color={query ? colors.primary : colors.textMuted} strokeWidth={2.2} />
               <TextInput
-                style={[styles.searchInput, { color: colors.textPrimary, fontFamily: 'Inter-Medium' }]}
+                className="flex-1 text-[14.5px] py-3.5 px-2.5"
+                style={{ color: colors.textPrimary, fontFamily: 'Inter-Medium' }}
                 value={query}
                 onChangeText={setQuery}
                 placeholder="Search building, landlord, street or unit..."
@@ -82,78 +94,205 @@ export default function PropertySearchScreen() {
                 returnKeyType="search"
               />
               {query ? (
-                <Pressable onPress={() => setQuery('')} hitSlop={8} style={[styles.clearBtn, { backgroundColor: colors.surfaceSecondary }]}>
-                  <X size={14} color={colors.textMuted} />
+                <Pressable
+                  onPress={() => setQuery('')}
+                  hitSlop={8}
+                  className="h-6 w-6 items-center justify-center rounded-full"
+                  style={{ backgroundColor: colors.surfaceSecondary }}
+                >
+                  <X size={13} color={colors.textMuted} strokeWidth={2.4} />
                 </Pressable>
               ) : null}
             </View>
           </Animated.View>
 
+          {/* Results State */}
           {results.length === 0 ? (
-            <View style={[styles.emptyState, { backgroundColor: colors.surface, borderColor: colors.border }, SHADOWS.card]}>
-              <View style={[styles.emptyIconCircle, { backgroundColor: colors.surfaceSecondary }]}>
-                <HelpCircle size={32} color={colors.textMuted} />
+            <View
+              className="items-center rounded-[22px] border p-7 mb-4"
+              style={{
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: isDark ? 0.25 : 0.04,
+                shadowRadius: 8,
+                elevation: 2,
+              }}
+            >
+              <View
+                className="h-14 w-14 items-center justify-center rounded-2xl mb-3"
+                style={{ backgroundColor: colors.surfaceSecondary }}
+              >
+                <HelpCircle size={28} color={colors.textMuted} />
               </View>
-              <Text style={[styles.emptyTitle, { color: colors.textPrimary, fontFamily: 'Inter-Bold' }]}>
+              <Text
+                className="text-[16px] mb-1.5"
+                style={{ color: colors.textPrimary, fontFamily: 'Inter-Bold' }}
+              >
                 No Properties Found
               </Text>
-              <Text style={[styles.emptyDesc, { color: colors.textSecondary, fontFamily: 'Inter-Regular' }]}>
+              <Text
+                className="text-[13px] text-center leading-[19px]"
+                style={{ color: colors.textSecondary, fontFamily: 'Inter-Regular' }}
+              >
                 We couldn't find any property matching "{query}". You can request manual verification below.
               </Text>
             </View>
           ) : (
             <>
-              <View style={styles.resultsHeaderRow}>
-                <Text style={[styles.resultsLabel, { color: colors.textMuted, fontFamily: 'Inter-SemiBold' }]}>
-                  {results.length} {results.length === 1 ? 'PROPERTY MATCH' : 'PROPERTIES MATCHED'}
-                </Text>
+              {/* Results Header Counter */}
+              <View className="flex-row items-center justify-between mb-3 px-1">
+                <View className="flex-row items-center gap-1.5">
+                  <View className="h-2 w-2 rounded-full bg-teal-500" />
+                  <Text
+                    className="text-[11.5px] tracking-[0.8px]"
+                    style={{ color: colors.textMuted, fontFamily: 'Inter-Bold' }}
+                  >
+                    {results.length} {results.length === 1 ? 'PROPERTY FOUND' : 'PROPERTIES FOUND'}
+                  </Text>
+                </View>
+                <View
+                  className="rounded-full px-2.5 py-0.5"
+                  style={{ backgroundColor: colors.surfaceSecondary }}
+                >
+                  <Text
+                    className="text-[11px]"
+                    style={{ color: colors.textSecondary, fontFamily: 'Inter-Medium' }}
+                  >
+                    Verified Database
+                  </Text>
+                </View>
               </View>
 
+              {/* Property Cards */}
               {results.map((prop, i) => (
-                <Animated.View key={prop.id} entering={FadeInUp.delay(i * 70).duration(300)}>
-                  <View style={[styles.propCard, { backgroundColor: colors.surface, borderColor: colors.border }, SHADOWS.card]}>
-                    <View style={styles.propHeader}>
-                      <View style={[styles.propIcon, { backgroundColor: colors.primaryGlow }]}>
-                        <Building2 size={22} color={colors.primary} />
+                <Animated.View key={prop.id} entering={FadeInUp.delay(i * 70).duration(350)} className="mb-3.5">
+                  <View
+                    className="rounded-[20px] border p-4"
+                    style={{
+                      backgroundColor: colors.surface,
+                      borderColor: colors.border,
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: isDark ? 0.25 : 0.04,
+                      shadowRadius: 8,
+                      elevation: 2,
+                    }}
+                  >
+                    {/* Header Row: Icon + Building Name & Address */}
+                    <View className="flex-row items-center mb-3">
+                      <View
+                        className="mr-3 h-[44px] w-[44px] shrink-0 items-center justify-center rounded-[14px]"
+                        style={{ backgroundColor: colors.primaryGlow }}
+                      >
+                        <Building2 size={21} color={colors.primary} strokeWidth={2.2} />
                       </View>
-                      <View style={{ flex: 1, paddingRight: 8 }}>
-                        <Text style={[styles.propName, { color: colors.textPrimary, fontFamily: 'Inter-Bold' }]}>{prop.name}</Text>
-                        <View style={styles.propAddrRow}>
-                          <MapPin size={12} color={colors.textMuted} />
-                          <Text style={[styles.propAddr, { color: colors.textSecondary, fontFamily: 'Inter-Regular' }]} numberOfLines={1}>{prop.address}</Text>
+
+                      <View className="min-w-0 flex-1 justify-center">
+                        <Text
+                          numberOfLines={1}
+                          className="text-[15.5px] tracking-[-0.2px]"
+                          style={{ color: colors.textPrimary, fontFamily: 'Inter-Bold' }}
+                        >
+                          {prop.name}
+                        </Text>
+                        <View className="flex-row items-center gap-1 mt-0.5">
+                          <MapPin size={11} color={colors.textMuted} />
+                          <Text
+                            numberOfLines={1}
+                            className="text-[12px] flex-1"
+                            style={{ color: colors.textSecondary, fontFamily: 'Inter-Regular' }}
+                          >
+                            {prop.address}
+                          </Text>
                         </View>
                       </View>
                     </View>
 
-                    <View style={[styles.propMetaContainer, { backgroundColor: colors.surfaceSecondary, borderColor: colors.borderLight }]}>
-                      <View style={styles.propMetaItem}>
-                        <User size={13} color={colors.textMuted} />
-                        <Text style={[styles.propMetaText, { color: colors.textSecondary, fontFamily: 'Inter-Medium' }]} numberOfLines={1}>Owner: {prop.landlordName}</Text>
+                    {/* Metadata Box: Owner & Property Manager */}
+                    <View
+                      className="flex-row items-center justify-between rounded-[12px] border px-3 py-2 mb-3"
+                      style={{
+                        backgroundColor: colors.surfaceSecondary,
+                        borderColor: colors.borderLight,
+                      }}
+                    >
+                      <View className="flex-row items-center gap-1.5 min-w-0 flex-1">
+                        <User size={12} color={colors.textMuted} />
+                        <Text
+                          numberOfLines={1}
+                          className="text-[11.5px]"
+                          style={{ color: colors.textSecondary, fontFamily: 'Inter-Medium' }}
+                        >
+                          Owner: {prop.landlordName}
+                        </Text>
                       </View>
-                      <View style={styles.propMetaDivider} />
-                      <View style={styles.propMetaItem}>
-                        <Users size={13} color={colors.textMuted} />
-                        <Text style={[styles.propMetaText, { color: colors.textSecondary, fontFamily: 'Inter-Medium' }]} numberOfLines={1}>Manager: {prop.propertyManagerName}</Text>
+
+                      <View className="h-3 w-[1px] bg-slate-300 dark:bg-slate-700 mx-2" />
+
+                      <View className="flex-row items-center gap-1.5 min-w-0 flex-1 justify-end">
+                        <Users size={12} color={colors.textMuted} />
+                        <Text
+                          numberOfLines={1}
+                          className="text-[11.5px]"
+                          style={{ color: colors.textSecondary, fontFamily: 'Inter-Medium' }}
+                        >
+                          Manager: {prop.propertyManagerName}
+                        </Text>
                       </View>
                     </View>
 
-                    <View style={styles.unitsSection}>
-                      <Text style={[styles.unitsLabel, { color: colors.textMuted, fontFamily: 'Inter-SemiBold' }]}>Available Units:</Text>
-                      <View style={styles.unitsRow}>
+                    {/* Available Units Strip */}
+                    <View className="mb-3">
+                      <View className="flex-row items-center gap-1 mb-1.5">
+                        <Home size={11} color={colors.textMuted} />
+                        <Text
+                          className="text-[11px]"
+                          style={{ color: colors.textMuted, fontFamily: 'Inter-Medium' }}
+                        >
+                          Available Units:
+                        </Text>
+                      </View>
+                      <View className="flex-row flex-wrap gap-1.5">
                         {prop.unitsAvailable.map((unit) => (
-                          <View key={unit} style={[styles.unitChip, { backgroundColor: colors.surfaceSecondary, borderColor: colors.borderLight }]}>
-                            <Text style={[styles.unitChipText, { color: colors.textSecondary, fontFamily: 'Inter-SemiBold' }]}>{unit}</Text>
+                          <View
+                            key={unit}
+                            className="rounded-md border px-2 py-0.5"
+                            style={{
+                              backgroundColor: colors.surfaceSecondary,
+                              borderColor: colors.borderLight,
+                            }}
+                          >
+                            <Text
+                              className="text-[11px]"
+                              style={{ color: colors.textPrimary, fontFamily: 'Inter-SemiBold' }}
+                            >
+                              {unit}
+                            </Text>
                           </View>
                         ))}
                       </View>
                     </View>
 
+                    {/* CTA Button */}
                     <Pressable
                       onPress={() => handleSelect(prop)}
-                      style={({ pressed }) => [styles.selectBtn, { backgroundColor: colors.primaryGlow, opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]}
+                      className="flex-row items-center justify-center gap-1.5 rounded-[12px] py-2.5 border"
+                      style={({ pressed }) => ({
+                        backgroundColor: colors.primaryGlow,
+                        borderColor: isDark ? 'rgba(20, 184, 166, 0.3)' : '#CCFBF1',
+                        opacity: pressed ? 0.85 : 1,
+                        transform: [{ scale: pressed ? 0.985 : 1 }],
+                      })}
                     >
-                      <Text style={[styles.selectBtnText, { color: colors.primary, fontFamily: 'Inter-Bold' }]}>Select This Property</Text>
-                      <ArrowRight size={16} color={colors.primary} />
+                      <Text
+                        className="text-[13px]"
+                        style={{ color: colors.primary, fontFamily: 'Inter-Bold' }}
+                      >
+                        Select This Property
+                      </Text>
+                      <ArrowRight size={14} color={colors.primary} strokeWidth={2.4} />
                     </Pressable>
                   </View>
                 </Animated.View>
@@ -161,23 +300,64 @@ export default function PropertySearchScreen() {
             </>
           )}
 
-          {/* Manual Option */}
-          <View style={[styles.helperCard, { backgroundColor: colors.surface, borderColor: colors.border }, SHADOWS.card]}>
-            <View style={[styles.helperIcon, { backgroundColor: '#FEF3C7' }]}>
-              <FileEdit size={22} color="#D97706" />
+          {/* Manual Verification Fallback Box */}
+          <View
+            className="flex-row items-center gap-3 rounded-[20px] border p-4 mt-2 mb-3"
+            style={{
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: isDark ? 0.25 : 0.04,
+              shadowRadius: 8,
+              elevation: 2,
+            }}
+          >
+            <View
+              className="h-[44px] w-[44px] shrink-0 items-center justify-center rounded-[14px]"
+              style={{ backgroundColor: isDark ? 'rgba(245, 158, 11, 0.15)' : '#FEF3C7' }}
+            >
+              <FileEdit size={21} color="#D97706" strokeWidth={2.2} />
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.helperTitle, { color: colors.textPrimary, fontFamily: 'Inter-Bold' }]}>Cannot find your property?</Text>
-              <Text style={[styles.helperDesc, { color: colors.textSecondary, fontFamily: 'Inter-Regular' }]}>
+            <View className="min-w-0 flex-1">
+              <Text
+                className="text-[14.5px] mb-0.5"
+                style={{ color: colors.textPrimary, fontFamily: 'Inter-Bold' }}
+              >
+                Cannot find your property?
+              </Text>
+              <Text
+                className="text-[12px] leading-[17px]"
+                style={{ color: colors.textSecondary, fontFamily: 'Inter-Regular' }}
+              >
                 Submit your landlord or unit details manually and we'll route verification to them.
               </Text>
             </View>
           </View>
 
-          <Pressable onPress={handleManualVerification} style={({ pressed }) => [{ opacity: pressed ? 0.92 : 1, transform: [{ scale: pressed ? 0.985 : 1 }] }]}>
-            <View style={[styles.manualBtn, { borderColor: colors.primary, backgroundColor: colors.primaryGlow }]}>
-              <Text style={[styles.manualBtnText, { color: colors.primary, fontFamily: 'Inter-Bold' }]}>Request Manual Verification</Text>
-              <ArrowRight size={17} color={colors.primary} />
+          {/* Manual Verification Action Button */}
+          <Pressable
+            onPress={handleManualVerification}
+            className="w-full"
+            style={({ pressed }) => [{
+              opacity: pressed ? 0.9 : 1,
+              transform: [{ scale: pressed ? 0.985 : 1 }],
+            }]}
+          >
+            <View
+              className="h-[50px] w-full flex-row items-center justify-center gap-2 rounded-[16px] border px-4"
+              style={{
+                backgroundColor: colors.primaryGlow,
+                borderColor: colors.primary,
+              }}
+            >
+              <Text
+                className="text-[14px]"
+                style={{ color: colors.primary, fontFamily: 'Inter-Bold' }}
+              >
+                Request Manual Verification
+              </Text>
+              <ArrowRight size={16} color={colors.primary} strokeWidth={2.2} />
             </View>
           </Pressable>
         </View>
@@ -186,48 +366,4 @@ export default function PropertySearchScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1 },
-  content: { paddingHorizontal: 18, paddingTop: 16 },
-  searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1.5,
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 2,
-    marginBottom: 18,
-  },
-  searchInput: { flex: 1, fontSize: 14.5, paddingVertical: 12, paddingHorizontal: 10 },
-  clearBtn: { width: 24, height: 24, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  resultsHeaderRow: { marginBottom: 12, paddingHorizontal: 4 },
-  resultsLabel: { fontSize: 11, letterSpacing: 1 },
-  propCard: { borderRadius: 18, borderWidth: 1, padding: 16, marginBottom: 14 },
-  propHeader: { flexDirection: 'row', alignItems: 'flex-start' },
-  propIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: 12 },
-  propName: { fontSize: 15.5 },
-  propAddrRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 4 },
-  propAddr: { fontSize: 12, flex: 1 },
-  propMetaContainer: { flexDirection: 'row', alignItems: 'center', borderRadius: 10, borderWidth: 1, paddingHorizontal: 12, paddingVertical: 8, marginTop: 12 },
-  propMetaItem: { flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1 },
-  propMetaDivider: { width: 1, height: 16, backgroundColor: '#CBD5E1', marginHorizontal: 8 },
-  propMetaText: { fontSize: 11.5 },
-  unitsSection: { marginTop: 12 },
-  unitsLabel: { fontSize: 11, marginBottom: 6 },
-  unitsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  unitChip: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, borderWidth: 1 },
-  unitChipText: { fontSize: 11.5 },
-  selectBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: 12, paddingVertical: 12, marginTop: 14 },
-  selectBtnText: { fontSize: 13.5 },
-  emptyState: { alignItems: 'center', padding: 28, borderRadius: 18, borderWidth: 1, marginBottom: 18 },
-  emptyIconCircle: { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
-  emptyTitle: { fontSize: 16, marginBottom: 6 },
-  emptyDesc: { fontSize: 13, textAlign: 'center', lineHeight: 19 },
-  helperCard: { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 16, borderWidth: 1, padding: 16, marginTop: 16, marginBottom: 14 },
-  helperIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  helperTitle: { fontSize: 14.5 },
-  helperDesc: { fontSize: 12, marginTop: 4, lineHeight: 17 },
-  manualBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 14, paddingVertical: 15, borderWidth: 1.5 },
-  manualBtnText: { fontSize: 14.5 },
-});
 
