@@ -4,15 +4,27 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import {
-  Search, Building2, User, Users, MapPin, ArrowRight,
-  HelpCircle, FileEdit, X, Sparkles, Home,
+  Search,
+  Building2,
+  User,
+  Users,
+  MapPin,
+  ArrowRight,
+  HelpCircle,
+  FileEdit,
+  X,
+  Home,
 } from 'lucide-react-native';
 import { useTheme } from '@/context/ThemeContext';
-import { mockNearbyProperties, NearbyProperty, SelectedProperty } from '@/data/mockData';
+import {
+  mockNearbyProperties,
+  NearbyProperty,
+  SelectedProperty,
+} from '@/data/mockData';
 import { ScreenHeader } from '@/components/ScreenHeader';
 
 export default function PropertySearchScreen() {
-  const { colors, isDark } = useTheme();
+  const { isDark } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
@@ -41,7 +53,10 @@ export default function PropertySearchScreen() {
       securityDeposit: prop.securityDeposit,
     };
     (globalThis as any).__pendingProperty = selected;
-    router.push({ pathname: '/onboarding/property-confirmation', params: { source: 'search' } });
+    router.push({
+      pathname: '/onboarding/property-confirmation',
+      params: { source: 'search' },
+    });
   };
 
   const handleManualVerification = () => {
@@ -55,15 +70,20 @@ export default function PropertySearchScreen() {
       approvalStatus: 'manual_verification_required',
     };
     (globalThis as any).__pendingProperty = selected;
-    router.push({ pathname: '/onboarding/property-confirmation', params: { source: 'manual' } });
+    router.push({
+      pathname: '/onboarding/property-confirmation',
+      params: { source: 'manual' },
+    });
   };
 
   return (
-    <View className="flex-1" style={{ backgroundColor: colors.background }}>
+    <View className="flex-1 bg-slate-50 dark:bg-slate-950">
       <ScreenHeader title="Search Property" />
 
       <ScrollView
-        contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, 20) + 36 }}
+        contentContainerStyle={{
+          paddingBottom: Math.max(insets.bottom, 20) + 36,
+        }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -71,25 +91,32 @@ export default function PropertySearchScreen() {
           {/* Modern Search Bar */}
           <Animated.View entering={FadeInDown.duration(300)}>
             <View
-              className="flex-row items-center rounded-[18px] border px-3.5 mb-4 shadow-sm"
-              style={{
-                backgroundColor: colors.surface,
-                borderColor: query ? colors.primary : colors.border,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: isDark ? 0.25 : 0.04,
-                shadowRadius: 6,
-                elevation: 2,
-              }}
+              className={`flex-row items-center rounded-[18px] border px-3.5 mb-4 shadow-sm ${
+                query
+                  ? 'border-teal-500 bg-white dark:bg-slate-900'
+                  : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
+              }`}
             >
-              <Search size={18} color={query ? colors.primary : colors.textMuted} strokeWidth={2.2} />
+              <Search
+                size={18}
+                color={
+                  query
+                    ? isDark
+                      ? '#2DD4BF'
+                      : '#0D9488'
+                    : isDark
+                      ? '#64748B'
+                      : '#94A3B8'
+                }
+                strokeWidth={2.2}
+              />
               <TextInput
-                className="flex-1 text-[14.5px] py-3.5 px-2.5"
-                style={{ color: colors.textPrimary, fontFamily: 'Inter-Medium' }}
+                className="flex-1 text-[14.5px] py-3.5 px-2.5 text-slate-900 dark:text-white"
+                style={{ fontFamily: 'Inter-Medium' }}
                 value={query}
                 onChangeText={setQuery}
                 placeholder="Search building, landlord, street or unit..."
-                placeholderTextColor={colors.textMuted}
+                placeholderTextColor={isDark ? '#64748B' : '#94A3B8'}
                 autoCorrect={false}
                 returnKeyType="search"
               />
@@ -97,10 +124,13 @@ export default function PropertySearchScreen() {
                 <Pressable
                   onPress={() => setQuery('')}
                   hitSlop={8}
-                  className="h-6 w-6 items-center justify-center rounded-full"
-                  style={{ backgroundColor: colors.surfaceSecondary }}
+                  className="h-6 w-6 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800"
                 >
-                  <X size={13} color={colors.textMuted} strokeWidth={2.4} />
+                  <X
+                    size={13}
+                    color={isDark ? '#94A3B8' : '#64748B'}
+                    strokeWidth={2.4}
+                  />
                 </Pressable>
               ) : null}
             </View>
@@ -108,35 +138,22 @@ export default function PropertySearchScreen() {
 
           {/* Results State */}
           {results.length === 0 ? (
-            <View
-              className="items-center rounded-[22px] border p-7 mb-4"
-              style={{
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: isDark ? 0.25 : 0.04,
-                shadowRadius: 8,
-                elevation: 2,
-              }}
-            >
-              <View
-                className="h-14 w-14 items-center justify-center rounded-2xl mb-3"
-                style={{ backgroundColor: colors.surfaceSecondary }}
-              >
-                <HelpCircle size={28} color={colors.textMuted} />
+            <View className="items-center rounded-[22px] border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-7 mb-4 shadow-sm">
+              <View className="h-14 w-14 items-center justify-center rounded-2xl mb-3 bg-slate-100 dark:bg-slate-800">
+                <HelpCircle size={28} color={isDark ? '#64748B' : '#94A3B8'} />
               </View>
               <Text
-                className="text-[16px] mb-1.5"
-                style={{ color: colors.textPrimary, fontFamily: 'Inter-Bold' }}
+                className="text-[16px] mb-1.5 text-slate-900 dark:text-white"
+                style={{ fontFamily: 'Inter-Bold' }}
               >
                 No Properties Found
               </Text>
               <Text
-                className="text-[13px] text-center leading-[19px]"
-                style={{ color: colors.textSecondary, fontFamily: 'Inter-Regular' }}
+                className="text-[13px] text-center leading-[19px] text-slate-500 dark:text-slate-400"
+                style={{ fontFamily: 'Inter-Regular' }}
               >
-                We couldn't find any property matching "{query}". You can request manual verification below.
+                We couldn't find any property matching "{query}". You can
+                request manual verification below.
               </Text>
             </View>
           ) : (
@@ -146,19 +163,19 @@ export default function PropertySearchScreen() {
                 <View className="flex-row items-center gap-1.5">
                   <View className="h-2 w-2 rounded-full bg-teal-500" />
                   <Text
-                    className="text-[11.5px] tracking-[0.8px]"
-                    style={{ color: colors.textMuted, fontFamily: 'Inter-Bold' }}
+                    className="text-[11.5px] tracking-[0.8px] text-slate-500 dark:text-slate-400"
+                    style={{ fontFamily: 'Inter-Bold' }}
                   >
-                    {results.length} {results.length === 1 ? 'PROPERTY FOUND' : 'PROPERTIES FOUND'}
+                    {results.length}{' '}
+                    {results.length === 1
+                      ? 'PROPERTY FOUND'
+                      : 'PROPERTIES FOUND'}
                   </Text>
                 </View>
-                <View
-                  className="rounded-full px-2.5 py-0.5"
-                  style={{ backgroundColor: colors.surfaceSecondary }}
-                >
+                <View className="rounded-full px-2.5 py-0.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
                   <Text
-                    className="text-[11px]"
-                    style={{ color: colors.textSecondary, fontFamily: 'Inter-Medium' }}
+                    className="text-[11px] text-slate-600 dark:text-slate-400"
+                    style={{ fontFamily: 'Inter-Medium' }}
                   >
                     Verified Database
                   </Text>
@@ -167,42 +184,39 @@ export default function PropertySearchScreen() {
 
               {/* Property Cards */}
               {results.map((prop, i) => (
-                <Animated.View key={prop.id} entering={FadeInUp.delay(i * 70).duration(350)} className="mb-3.5">
-                  <View
-                    className="rounded-[20px] border p-4"
-                    style={{
-                      backgroundColor: colors.surface,
-                      borderColor: colors.border,
-                      shadowColor: '#000',
-                      shadowOffset: { width: 0, height: 2 },
-                      shadowOpacity: isDark ? 0.25 : 0.04,
-                      shadowRadius: 8,
-                      elevation: 2,
-                    }}
-                  >
+                <Animated.View
+                  key={prop.id}
+                  entering={FadeInUp.delay(i * 70).duration(350)}
+                  className="mb-3.5"
+                >
+                  <View className="rounded-[20px] border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
                     {/* Header Row: Icon + Building Name & Address */}
                     <View className="flex-row items-center mb-3">
-                      <View
-                        className="mr-3 h-[44px] w-[44px] shrink-0 items-center justify-center rounded-[14px]"
-                        style={{ backgroundColor: colors.primaryGlow }}
-                      >
-                        <Building2 size={21} color={colors.primary} strokeWidth={2.2} />
+                      <View className="mr-3 h-[44px] w-[44px] shrink-0 items-center justify-center rounded-[14px] bg-teal-50 dark:bg-teal-950/80 border border-teal-200 dark:border-teal-800">
+                        <Building2
+                          size={21}
+                          color={isDark ? '#2DD4BF' : '#0D9488'}
+                          strokeWidth={2.2}
+                        />
                       </View>
 
                       <View className="min-w-0 flex-1 justify-center">
                         <Text
                           numberOfLines={1}
-                          className="text-[15.5px] tracking-[-0.2px]"
-                          style={{ color: colors.textPrimary, fontFamily: 'Inter-Bold' }}
+                          className="text-[15.5px] tracking-[-0.2px] text-slate-900 dark:text-white"
+                          style={{ fontFamily: 'Inter-Bold' }}
                         >
                           {prop.name}
                         </Text>
                         <View className="flex-row items-center gap-1 mt-0.5">
-                          <MapPin size={11} color={colors.textMuted} />
+                          <MapPin
+                            size={11}
+                            color={isDark ? '#94A3B8' : '#64748B'}
+                          />
                           <Text
                             numberOfLines={1}
-                            className="text-[12px] flex-1"
-                            style={{ color: colors.textSecondary, fontFamily: 'Inter-Regular' }}
+                            className="text-[12px] flex-1 text-slate-500 dark:text-slate-400"
+                            style={{ fontFamily: 'Inter-Regular' }}
                           >
                             {prop.address}
                           </Text>
@@ -211,32 +225,32 @@ export default function PropertySearchScreen() {
                     </View>
 
                     {/* Metadata Box: Owner & Property Manager */}
-                    <View
-                      className="flex-row items-center justify-between rounded-[12px] border px-3 py-2 mb-3"
-                      style={{
-                        backgroundColor: colors.surfaceSecondary,
-                        borderColor: colors.borderLight,
-                      }}
-                    >
+                    <View className="flex-row items-center justify-between rounded-[12px] border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 px-3 py-2 mb-3">
                       <View className="flex-row items-center gap-1.5 min-w-0 flex-1">
-                        <User size={12} color={colors.textMuted} />
+                        <User
+                          size={12}
+                          color={isDark ? '#94A3B8' : '#64748B'}
+                        />
                         <Text
                           numberOfLines={1}
-                          className="text-[11.5px]"
-                          style={{ color: colors.textSecondary, fontFamily: 'Inter-Medium' }}
+                          className="text-[11.5px] text-slate-600 dark:text-slate-400"
+                          style={{ fontFamily: 'Inter-Medium' }}
                         >
                           Owner: {prop.landlordName}
                         </Text>
                       </View>
 
-                      <View className="h-3 w-[1px] bg-slate-300 dark:bg-slate-700 mx-2" />
+                      <View className="h-3 w-[1px] bg-slate-200 dark:bg-slate-700 mx-2" />
 
                       <View className="flex-row items-center gap-1.5 min-w-0 flex-1 justify-end">
-                        <Users size={12} color={colors.textMuted} />
+                        <Users
+                          size={12}
+                          color={isDark ? '#94A3B8' : '#64748B'}
+                        />
                         <Text
                           numberOfLines={1}
-                          className="text-[11.5px]"
-                          style={{ color: colors.textSecondary, fontFamily: 'Inter-Medium' }}
+                          className="text-[11.5px] text-slate-600 dark:text-slate-400"
+                          style={{ fontFamily: 'Inter-Medium' }}
                         >
                           Manager: {prop.propertyManagerName}
                         </Text>
@@ -246,10 +260,13 @@ export default function PropertySearchScreen() {
                     {/* Available Units Strip */}
                     <View className="mb-3">
                       <View className="flex-row items-center gap-1 mb-1.5">
-                        <Home size={11} color={colors.textMuted} />
+                        <Home
+                          size={11}
+                          color={isDark ? '#94A3B8' : '#64748B'}
+                        />
                         <Text
-                          className="text-[11px]"
-                          style={{ color: colors.textMuted, fontFamily: 'Inter-Medium' }}
+                          className="text-[11px] text-slate-500 dark:text-slate-400"
+                          style={{ fontFamily: 'Inter-Medium' }}
                         >
                           Available Units:
                         </Text>
@@ -258,15 +275,11 @@ export default function PropertySearchScreen() {
                         {prop.unitsAvailable.map((unit) => (
                           <View
                             key={unit}
-                            className="rounded-md border px-2 py-0.5"
-                            style={{
-                              backgroundColor: colors.surfaceSecondary,
-                              borderColor: colors.borderLight,
-                            }}
+                            className="rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 px-2 py-0.5"
                           >
                             <Text
-                              className="text-[11px]"
-                              style={{ color: colors.textPrimary, fontFamily: 'Inter-SemiBold' }}
+                              className="text-[11px] text-slate-800 dark:text-slate-200"
+                              style={{ fontFamily: 'Inter-SemiBold' }}
                             >
                               {unit}
                             </Text>
@@ -278,21 +291,23 @@ export default function PropertySearchScreen() {
                     {/* CTA Button */}
                     <Pressable
                       onPress={() => handleSelect(prop)}
-                      className="flex-row items-center justify-center gap-1.5 rounded-[12px] py-2.5 border"
+                      className="flex-row items-center justify-center gap-1.5 rounded-[12px] py-2.5 border border-teal-200 dark:border-teal-800 bg-teal-50 dark:bg-teal-950/60"
                       style={({ pressed }) => ({
-                        backgroundColor: colors.primaryGlow,
-                        borderColor: isDark ? 'rgba(20, 184, 166, 0.3)' : '#CCFBF1',
                         opacity: pressed ? 0.85 : 1,
                         transform: [{ scale: pressed ? 0.985 : 1 }],
                       })}
                     >
                       <Text
-                        className="text-[13px]"
-                        style={{ color: colors.primary, fontFamily: 'Inter-Bold' }}
+                        className="text-[13px] text-teal-700 dark:text-teal-300"
+                        style={{ fontFamily: 'Inter-Bold' }}
                       >
                         Select This Property
                       </Text>
-                      <ArrowRight size={14} color={colors.primary} strokeWidth={2.4} />
+                      <ArrowRight
+                        size={14}
+                        color={isDark ? '#2DD4BF' : '#0D9488'}
+                        strokeWidth={2.4}
+                      />
                     </Pressable>
                   </View>
                 </Animated.View>
@@ -301,36 +316,27 @@ export default function PropertySearchScreen() {
           )}
 
           {/* Manual Verification Fallback Box */}
-          <View
-            className="flex-row items-center gap-3 rounded-[20px] border p-4 mt-2 mb-3"
-            style={{
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: isDark ? 0.25 : 0.04,
-              shadowRadius: 8,
-              elevation: 2,
-            }}
-          >
-            <View
-              className="h-[44px] w-[44px] shrink-0 items-center justify-center rounded-[14px]"
-              style={{ backgroundColor: isDark ? 'rgba(245, 158, 11, 0.15)' : '#FEF3C7' }}
-            >
-              <FileEdit size={21} color="#D97706" strokeWidth={2.2} />
+          <View className="flex-row items-center gap-3 rounded-[20px] border border-amber-200/80 dark:border-amber-900/60 bg-white dark:bg-slate-900 p-4 mt-2 mb-3 shadow-sm">
+            <View className="h-[44px] w-[44px] shrink-0 items-center justify-center rounded-[14px] bg-amber-50 dark:bg-amber-950/80 border border-amber-200 dark:border-amber-800">
+              <FileEdit
+                size={21}
+                color={isDark ? '#FBBF24' : '#D97706'}
+                strokeWidth={2.2}
+              />
             </View>
             <View className="min-w-0 flex-1">
               <Text
-                className="text-[14.5px] mb-0.5"
-                style={{ color: colors.textPrimary, fontFamily: 'Inter-Bold' }}
+                className="text-[14.5px] mb-0.5 text-slate-900 dark:text-white"
+                style={{ fontFamily: 'Inter-Bold' }}
               >
                 Cannot find your property?
               </Text>
               <Text
-                className="text-[12px] leading-[17px]"
-                style={{ color: colors.textSecondary, fontFamily: 'Inter-Regular' }}
+                className="text-[12px] leading-[17px] text-slate-500 dark:text-slate-400"
+                style={{ fontFamily: 'Inter-Regular' }}
               >
-                Submit your landlord or unit details manually and we'll route verification to them.
+                Submit your landlord or unit details manually and we'll route
+                verification to them.
               </Text>
             </View>
           </View>
@@ -338,26 +344,26 @@ export default function PropertySearchScreen() {
           {/* Manual Verification Action Button */}
           <Pressable
             onPress={handleManualVerification}
-            className="w-full"
-            style={({ pressed }) => [{
-              opacity: pressed ? 0.9 : 1,
-              transform: [{ scale: pressed ? 0.985 : 1 }],
-            }]}
+            className="w-full mb-4"
+            style={({ pressed }) => [
+              {
+                opacity: pressed ? 0.9 : 1,
+                transform: [{ scale: pressed ? 0.985 : 1 }],
+              },
+            ]}
           >
-            <View
-              className="h-[50px] w-full flex-row items-center justify-center gap-2 rounded-[16px] border px-4"
-              style={{
-                backgroundColor: colors.primaryGlow,
-                borderColor: colors.primary,
-              }}
-            >
+            <View className="h-[50px] w-full flex-row items-center justify-center gap-2 rounded-[16px] border border-teal-600 dark:border-teal-500 bg-teal-50 dark:bg-teal-950/60 px-4">
               <Text
-                className="text-[14px]"
-                style={{ color: colors.primary, fontFamily: 'Inter-Bold' }}
+                className="text-[14px] text-teal-700 dark:text-teal-300"
+                style={{ fontFamily: 'Inter-Bold' }}
               >
                 Request Manual Verification
               </Text>
-              <ArrowRight size={16} color={colors.primary} strokeWidth={2.2} />
+              <ArrowRight
+                size={16}
+                color={isDark ? '#2DD4BF' : '#0D9488'}
+                strokeWidth={2.2}
+              />
             </View>
           </Pressable>
         </View>
@@ -365,5 +371,3 @@ export default function PropertySearchScreen() {
     </View>
   );
 }
-
-

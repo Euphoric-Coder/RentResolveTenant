@@ -12,7 +12,6 @@ import {
   User,
   ArrowRight,
   ShieldCheck,
-  Sparkles,
   Home,
 } from 'lucide-react-native';
 import { useTheme } from '@/context/ThemeContext';
@@ -23,17 +22,29 @@ import {
 } from '@/data/mockData';
 import { ScreenHeader } from '@/components/ScreenHeader';
 
-const MATCH_COLORS: Record<
+const MATCH_CONFIG: Record<
   string,
-  { bg: string; text: string; border: string }
+  { bgClass: string; textClass: string; borderClass: string }
 > = {
-  'High Match': { bg: '#ECFDF5', text: '#059669', border: '#A7F3D0' },
-  'Possible Match': { bg: '#FFFBEB', text: '#B45309', border: '#FDE68A' },
-  Nearby: { bg: '#F0F9FF', text: '#0284C7', border: '#BAE6FD' },
+  'High Match': {
+    bgClass: 'bg-emerald-50 dark:bg-emerald-950/80',
+    textClass: 'text-emerald-700 dark:text-emerald-300',
+    borderClass: 'border-emerald-200 dark:border-emerald-800',
+  },
+  'Possible Match': {
+    bgClass: 'bg-amber-50 dark:bg-amber-950/80',
+    textClass: 'text-amber-700 dark:text-amber-300',
+    borderClass: 'border-amber-200 dark:border-amber-800',
+  },
+  Nearby: {
+    bgClass: 'bg-sky-50 dark:bg-sky-950/80',
+    textClass: 'text-sky-700 dark:text-sky-300',
+    borderClass: 'border-sky-200 dark:border-sky-800',
+  },
 };
 
 export default function LocationBasedPropertyScreen() {
-  const { colors, isDark } = useTheme();
+  const { isDark } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(false);
@@ -69,7 +80,7 @@ export default function LocationBasedPropertyScreen() {
   };
 
   return (
-    <View className="flex-1" style={{ backgroundColor: colors.background }}>
+    <View className="flex-1 bg-slate-50 dark:bg-slate-950">
       <ScreenHeader title="Nearby Rental Properties" />
 
       <ScrollView
@@ -82,11 +93,8 @@ export default function LocationBasedPropertyScreen() {
           {/* Subtitle Intro */}
           <Animated.View entering={FadeInDown.duration(400)}>
             <Text
-              className="text-[13.5px] leading-5 mb-3 px-0.5"
-              style={{
-                color: colors.textSecondary,
-                fontFamily: 'Inter-Regular',
-              }}
+              className="text-[13.5px] leading-5 mb-3 px-0.5 text-slate-600 dark:text-slate-400"
+              style={{ fontFamily: 'Inter-Regular' }}
             >
               Detect nearby apartment buildings and rental residences using your
               device's location.
@@ -96,53 +104,39 @@ export default function LocationBasedPropertyScreen() {
           {/* Location Permission Info Card */}
           <Animated.View
             entering={FadeInUp.delay(100).duration(400)}
-            className="flex-row items-center gap-3 rounded-[20px] border p-4 mb-3"
-            style={{
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: isDark ? 0.25 : 0.04,
-              shadowRadius: 8,
-              elevation: 2,
-            }}
+            className="flex-row items-center gap-3 rounded-[20px] border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 mb-3 shadow-sm"
           >
-            <View
-              className="h-[44px] w-[44px] shrink-0 items-center justify-center rounded-[14px]"
-              style={{ backgroundColor: colors.accentLight }}
-            >
-              <Navigation size={20} color={colors.accent} strokeWidth={2.2} />
+            <View className="h-[44px] w-[44px] shrink-0 items-center justify-center rounded-[14px] bg-sky-50 dark:bg-sky-950/80 border border-sky-200 dark:border-sky-800">
+              <Navigation
+                size={20}
+                color={isDark ? '#38BDF8' : '#0284C7'}
+                strokeWidth={2.2}
+              />
             </View>
             <View className="min-w-0 flex-1">
               <View className="flex-row items-center justify-between mb-0.5">
                 <Text
-                  className="text-[14.5px]"
-                  style={{
-                    color: colors.textPrimary,
-                    fontFamily: 'Inter-Bold',
-                  }}
+                  className="text-[14.5px] text-slate-900 dark:text-white"
+                  style={{ fontFamily: 'Inter-Bold' }}
                 >
                   Location Access
                 </Text>
-                <View
-                  className="flex-row items-center gap-1 rounded-full px-2.5 py-0.5"
-                  style={{ backgroundColor: colors.surfaceSecondary }}
-                >
-                  <ShieldCheck size={11} color={colors.primary} />
+                <View className="flex-row items-center gap-1 rounded-full px-2.5 py-0.5 bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800">
+                  <ShieldCheck
+                    size={11}
+                    color={isDark ? '#2DD4BF' : '#0D9488'}
+                  />
                   <Text
-                    className="text-[10.5px]"
-                    style={{
-                      color: colors.primary,
-                      fontFamily: 'Inter-SemiBold',
-                    }}
+                    className="text-[10.5px] text-teal-700 dark:text-teal-300"
+                    style={{ fontFamily: 'Inter-SemiBold' }}
                   >
                     Private
                   </Text>
                 </View>
               </View>
               <Text
-                className="text-[12px] leading-[17px]"
-                style={{ color: colors.textMuted, fontFamily: 'Inter-Regular' }}
+                className="text-[12px] leading-[17px] text-slate-500 dark:text-slate-400"
+                style={{ fontFamily: 'Inter-Regular' }}
               >
                 Used exclusively to locate properties near you. Your coordinate
                 history is never tracked.
@@ -154,9 +148,9 @@ export default function LocationBasedPropertyScreen() {
           <Pressable
             onPress={handleUseLocation}
             disabled={loading}
-            className="w-full mb-1 rounded-2xl overflow-hidden"
+            className="w-full mb-1 rounded-2xl overflow-hidden shadow-sm"
             style={({ pressed }) => ({
-              opacity: pressed ? 0.9 : 1,
+              opacity: pressed ? 0.92 : 1,
               transform: [{ scale: pressed ? 0.985 : 1 }],
             })}
           >
@@ -175,7 +169,6 @@ export default function LocationBasedPropertyScreen() {
                 {loading ? (
                   <>
                     <Loader2 size={19} color="#FFFFFF" strokeWidth={2.2} />
-
                     <Text
                       className="text-[15px] text-white"
                       style={{ fontFamily: 'Inter-SemiBold' }}
@@ -186,7 +179,6 @@ export default function LocationBasedPropertyScreen() {
                 ) : (
                   <>
                     <MapPin size={19} color="#FFFFFF" strokeWidth={2.2} />
-
                     <Text
                       className="text-[15px] text-white"
                       style={{ fontFamily: 'Inter-SemiBold' }}
@@ -202,15 +194,12 @@ export default function LocationBasedPropertyScreen() {
           {/* Loading Animation Area */}
           {loading && (
             <View className="items-center py-7">
-              <View className="h-11 w-11 items-center justify-center rounded-2xl bg-teal-500/10 mb-2.5">
-                <Loader2 size={24} color={colors.primary} />
+              <View className="h-11 w-11 items-center justify-center rounded-2xl bg-teal-500/10 dark:bg-teal-400/20 mb-2.5">
+                <Loader2 size={24} color={isDark ? '#2DD4BF' : '#0D9488'} />
               </View>
               <Text
-                className="text-[13px]"
-                style={{
-                  color: colors.textSecondary,
-                  fontFamily: 'Inter-Medium',
-                }}
+                className="text-[13px] text-slate-600 dark:text-slate-400"
+                style={{ fontFamily: 'Inter-Medium' }}
               >
                 Searching properties within 1 km...
               </Text>
@@ -224,25 +213,16 @@ export default function LocationBasedPropertyScreen() {
                 <View className="flex-row items-center gap-1.5">
                   <View className="h-2 w-2 rounded-full bg-teal-500" />
                   <Text
-                    className="text-[11.5px] tracking-[0.8px]"
-                    style={{
-                      color: colors.textMuted,
-                      fontFamily: 'Inter-Bold',
-                    }}
+                    className="text-[11.5px] tracking-[0.8px] text-slate-500 dark:text-slate-400"
+                    style={{ fontFamily: 'Inter-Bold' }}
                   >
                     FOUND {mockNearbyProperties.length} PROPERTIES
                   </Text>
                 </View>
-                <View
-                  className="rounded-full px-2.5 py-0.5"
-                  style={{ backgroundColor: colors.surfaceSecondary }}
-                >
+                <View className="rounded-full px-2.5 py-0.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
                   <Text
-                    className="text-[11px]"
-                    style={{
-                      color: colors.textSecondary,
-                      fontFamily: 'Inter-Medium',
-                    }}
+                    className="text-[11px] text-slate-600 dark:text-slate-400"
+                    style={{ fontFamily: 'Inter-Medium' }}
                   >
                     GPS Verified
                   </Text>
@@ -251,34 +231,20 @@ export default function LocationBasedPropertyScreen() {
 
               {mockNearbyProperties.map((prop, i) => {
                 const mc =
-                  MATCH_COLORS[prop.matchConfidence] || MATCH_COLORS['Nearby'];
+                  MATCH_CONFIG[prop.matchConfidence] || MATCH_CONFIG['Nearby'];
                 return (
                   <Animated.View
                     key={prop.id}
                     entering={FadeInUp.delay(i * 80).duration(350)}
                     className="mb-3"
                   >
-                    <View
-                      className="rounded-[20px] border p-4"
-                      style={{
-                        backgroundColor: colors.surface,
-                        borderColor: colors.border,
-                        shadowColor: '#000',
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: isDark ? 0.25 : 0.04,
-                        shadowRadius: 8,
-                        elevation: 2,
-                      }}
-                    >
+                    <View className="rounded-[20px] border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
                       {/* Property Header: Icon + Title/Address + Match Badge */}
                       <View className="flex-row items-center justify-between mb-2.5">
-                        <View
-                          className="mr-3 h-[44px] w-[44px] shrink-0 items-center justify-center rounded-[14px]"
-                          style={{ backgroundColor: colors.primaryGlow }}
-                        >
+                        <View className="mr-3 h-[44px] w-[44px] shrink-0 items-center justify-center rounded-[14px] bg-teal-50 dark:bg-teal-950/80 border border-teal-200 dark:border-teal-800">
                           <Building2
                             size={21}
-                            color={colors.primary}
+                            color={isDark ? '#2DD4BF' : '#0D9488'}
                             strokeWidth={2.2}
                           />
                         </View>
@@ -286,23 +252,20 @@ export default function LocationBasedPropertyScreen() {
                         <View className="min-w-0 flex-1 justify-center pr-2">
                           <Text
                             numberOfLines={1}
-                            className="text-[15.5px] tracking-[-0.2px]"
-                            style={{
-                              color: colors.textPrimary,
-                              fontFamily: 'Inter-Bold',
-                            }}
+                            className="text-[15.5px] tracking-[-0.2px] text-slate-900 dark:text-white"
+                            style={{ fontFamily: 'Inter-Bold' }}
                           >
                             {prop.name}
                           </Text>
                           <View className="flex-row items-center gap-1 mt-0.5">
-                            <MapPin size={11} color={colors.textMuted} />
+                            <MapPin
+                              size={11}
+                              color={isDark ? '#94A3B8' : '#64748B'}
+                            />
                             <Text
                               numberOfLines={1}
-                              className="text-[12px] flex-1"
-                              style={{
-                                color: colors.textSecondary,
-                                fontFamily: 'Inter-Regular',
-                              }}
+                              className="text-[12px] flex-1 text-slate-500 dark:text-slate-400"
+                              style={{ fontFamily: 'Inter-Regular' }}
                             >
                               {prop.address}
                             </Text>
@@ -310,15 +273,11 @@ export default function LocationBasedPropertyScreen() {
                         </View>
 
                         <View
-                          className="shrink-0 rounded-full px-2.5 py-1 border"
-                          style={{
-                            backgroundColor: mc.bg,
-                            borderColor: mc.border,
-                          }}
+                          className={`shrink-0 rounded-full px-2.5 py-1 border ${mc.bgClass} ${mc.borderClass}`}
                         >
                           <Text
-                            className="text-[10px]"
-                            style={{ color: mc.text, fontFamily: 'Inter-Bold' }}
+                            className={`text-[10px] ${mc.textClass}`}
+                            style={{ fontFamily: 'Inter-Bold' }}
                           >
                             {prop.matchConfidence}
                           </Text>
@@ -326,37 +285,31 @@ export default function LocationBasedPropertyScreen() {
                       </View>
 
                       {/* Metadata Pill Box (Distance & Landlord Info) */}
-                      <View
-                        className="flex-row items-center justify-between rounded-[12px] border px-3 py-2 mb-2.5"
-                        style={{
-                          backgroundColor: colors.surfaceSecondary,
-                          borderColor: colors.borderLight,
-                        }}
-                      >
+                      <View className="flex-row items-center justify-between rounded-[12px] border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 px-3 py-2 mb-2.5">
                         <View className="flex-row items-center gap-1.5 shrink-0">
-                          <Navigation size={12} color={colors.primary} />
+                          <Navigation
+                            size={12}
+                            color={isDark ? '#2DD4BF' : '#0D9488'}
+                          />
                           <Text
-                            className="text-[11.5px]"
-                            style={{
-                              color: colors.textPrimary,
-                              fontFamily: 'Inter-SemiBold',
-                            }}
+                            className="text-[11.5px] text-slate-900 dark:text-white"
+                            style={{ fontFamily: 'Inter-SemiBold' }}
                           >
                             {prop.distance} away
                           </Text>
                         </View>
 
-                        <View className="h-3 w-[1px] bg-slate-300 dark:bg-slate-700" />
+                        <View className="h-3 w-[1px] bg-slate-200 dark:bg-slate-700" />
 
                         <View className="flex-row items-center gap-1.5 min-w-0 flex-1 justify-end">
-                          <User size={12} color={colors.textMuted} />
+                          <User
+                            size={12}
+                            color={isDark ? '#94A3B8' : '#64748B'}
+                          />
                           <Text
                             numberOfLines={1}
-                            className="text-[11.5px]"
-                            style={{
-                              color: colors.textSecondary,
-                              fontFamily: 'Inter-Medium',
-                            }}
+                            className="text-[11.5px] text-slate-600 dark:text-slate-400"
+                            style={{ fontFamily: 'Inter-Medium' }}
                           >
                             {prop.landlordName}
                           </Text>
@@ -366,13 +319,13 @@ export default function LocationBasedPropertyScreen() {
                       {/* Available Units Chip Strip */}
                       <View className="mb-3">
                         <View className="flex-row items-center gap-1 mb-1.5">
-                          <Home size={11} color={colors.textMuted} />
+                          <Home
+                            size={11}
+                            color={isDark ? '#94A3B8' : '#64748B'}
+                          />
                           <Text
-                            className="text-[11px]"
-                            style={{
-                              color: colors.textMuted,
-                              fontFamily: 'Inter-Medium',
-                            }}
+                            className="text-[11px] text-slate-500 dark:text-slate-400"
+                            style={{ fontFamily: 'Inter-Medium' }}
                           >
                             Available Units:
                           </Text>
@@ -381,18 +334,11 @@ export default function LocationBasedPropertyScreen() {
                           {prop.unitsAvailable.map((unit) => (
                             <View
                               key={unit}
-                              className="rounded-md border px-2 py-0.5"
-                              style={{
-                                backgroundColor: colors.surfaceSecondary,
-                                borderColor: colors.borderLight,
-                              }}
+                              className="rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 px-2 py-0.5"
                             >
                               <Text
-                                className="text-[11px]"
-                                style={{
-                                  color: colors.textPrimary,
-                                  fontFamily: 'Inter-SemiBold',
-                                }}
+                                className="text-[11px] text-slate-800 dark:text-slate-200"
+                                style={{ fontFamily: 'Inter-SemiBold' }}
                               >
                                 {unit}
                               </Text>
@@ -404,28 +350,21 @@ export default function LocationBasedPropertyScreen() {
                       {/* CTA Action Button */}
                       <Pressable
                         onPress={() => handleSelect(prop)}
-                        className="flex-row items-center justify-center gap-1.5 rounded-[12px] py-2.5 border"
+                        className="flex-row items-center justify-center gap-1.5 rounded-[12px] py-2.5 border border-teal-200 dark:border-teal-800 bg-teal-50 dark:bg-teal-950/60"
                         style={({ pressed }) => ({
-                          backgroundColor: colors.primaryGlow,
-                          borderColor: isDark
-                            ? 'rgba(20, 184, 166, 0.3)'
-                            : '#CCFBF1',
                           opacity: pressed ? 0.85 : 1,
                           transform: [{ scale: pressed ? 0.985 : 1 }],
                         })}
                       >
                         <Text
-                          className="text-[13px]"
-                          style={{
-                            color: colors.primary,
-                            fontFamily: 'Inter-Bold',
-                          }}
+                          className="text-[13px] text-teal-700 dark:text-teal-300"
+                          style={{ fontFamily: 'Inter-Bold' }}
                         >
                           Select This Property
                         </Text>
                         <ArrowRight
                           size={14}
-                          color={colors.primary}
+                          color={isDark ? '#2DD4BF' : '#0D9488'}
                           strokeWidth={2.4}
                         />
                       </Pressable>

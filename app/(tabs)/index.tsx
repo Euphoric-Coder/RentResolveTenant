@@ -84,58 +84,154 @@ export default function DashboardScreen() {
       </View>
 
       {nextRent && (
-        <Animated.View entering={FadeInUp.delay(200).duration(500).springify()} style={[styles.rentCard, SHADOWS.prominent]}>
+        <Animated.View
+          entering={FadeInUp.delay(200).duration(500).springify()}
+          className="mx-5 -mt-7 mb-2 overflow-hidden rounded-[24px] border border-amber-300 dark:border-amber-500/40 bg-white dark:bg-slate-900"
+          style={{
+            shadowColor: '#D97706',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: isDark ? 0.35 : 0.08,
+            shadowRadius: 14,
+            elevation: 6,
+          }}
+        >
+          {/* Subtle Ambient Amber/Golden Gradient */}
           <LinearGradient
-            colors={isDark ? ['#1E293B', '#1E293B'] : ['#FFFFFF', '#F8FAFC']}
-            style={styles.rentCardGradient}
+            colors={isDark ? ['rgba(217,119,6,0.14)', 'rgba(217,119,6,0.02)'] : ['#FFFDF7', '#FFFFFF']}
             start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-          >
-            <View style={styles.rentLeft}>
-              <View style={[styles.rentIconWrap, { backgroundColor: colors.warningLight }]}>
-                <Wallet size={18} color={colors.warning} />
+            end={{ x: 1, y: 1 }}
+            style={StyleSheet.absoluteFill}
+          />
+
+          <View className="flex-row items-center justify-between p-4">
+            {/* Left Content: Glowing Icon + Vertical Details */}
+            <View className="flex-1 flex-row items-center gap-3 pr-3 min-w-0">
+              <View className="relative shrink-0">
+                <View className="absolute -inset-1 rounded-[16px] bg-amber-400/25 blur-sm" />
+                <View className="h-[48px] w-[48px] items-center justify-center rounded-[15px] border border-amber-300 dark:border-amber-500/50 bg-amber-100 dark:bg-amber-950/80">
+                  <Wallet size={22} color="#D97706" strokeWidth={2.2} />
+                </View>
               </View>
-              <View>
-                <Text style={[styles.rentLabel, { color: colors.textMuted, fontFamily: 'Inter-Medium' }]}>Upcoming Rent</Text>
-                <Text style={[styles.rentAmount, { color: colors.textPrimary, fontFamily: 'Inter-ExtraBold' }]}>
-                  Rs. {nextRent.amount.toLocaleString()}
+
+              <View className="min-w-0 flex-1">
+                <Text
+                  className="text-[10.5px] tracking-[0.8px] text-amber-700 dark:text-amber-400"
+                  style={{ fontFamily: 'Inter-Bold' }}
+                >
+                  UPCOMING RENT
                 </Text>
-                <Text style={[styles.rentDue, { color: colors.warning, fontFamily: 'Inter-SemiBold' }]}>Due {nextRent.dueDate}</Text>
+
+                <Text
+                  numberOfLines={1}
+                  className="text-[19px] tracking-[-0.4px] text-slate-900 dark:text-white mt-0.5"
+                  style={{ fontFamily: 'Inter-Bold' }}
+                >
+                  ₹{nextRent.amount.toLocaleString()}
+                </Text>
+
+                <Text
+                  numberOfLines={1}
+                  className="text-[11px] text-amber-600 dark:text-amber-400 mt-0.5"
+                  style={{ fontFamily: 'Inter-Medium' }}
+                >
+                  Due {nextRent.dueDate}
+                </Text>
               </View>
             </View>
-            <Pressable style={styles.rentButton} onPress={() => router.push('/(tabs)/rent')}>
+
+            {/* Right Action Button */}
+            <Pressable
+              onPress={() => router.push('/(tabs)/rent')}
+              className="overflow-hidden rounded-[14px] shadow-sm shrink-0"
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.92 : 1,
+                transform: [{ scale: pressed ? 0.98 : 1 }],
+              })}
+            >
               <LinearGradient
-                colors={['#1E6B5A', '#0D9488']}
-                style={styles.rentButtonGradient}
+                colors={['#0F766E', '#0D9488']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
+                style={{
+                  paddingHorizontal: 16,
+                  paddingVertical: 10,
+                  borderRadius: 14,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 5,
+                }}
               >
-                <Text style={[styles.rentButtonText, { fontFamily: 'Inter-SemiBold' }]}>Pay</Text>
-                <ArrowRight size={14} color="#FFFFFF" />
+                <Text
+                  className="text-[13.5px] text-white"
+                  style={{ fontFamily: 'Inter-Bold', lineHeight: 18 }}
+                >
+                  Pay Now
+                </Text>
+                <ArrowRight size={13.5} color="#FFFFFF" strokeWidth={2.4} />
               </LinearGradient>
             </Pressable>
-          </LinearGradient>
+          </View>
         </Animated.View>
       )}
 
       <View style={styles.content}>
-        <Animated.View entering={FadeInUp.delay(150).duration(500)} style={[styles.connectedCard, { backgroundColor: colors.surface, borderColor: colors.border }, SHADOWS.card]}>
-          <View style={styles.connectedHeader}>
-            <View style={[styles.connectedIcon, { backgroundColor: colors.primaryGlow }]}>
-              <Home size={18} color={colors.primary} />
+        <Animated.View
+          entering={FadeInUp.delay(150).duration(500)}
+          className="mb-4 overflow-hidden rounded-[22px] border border-teal-300 dark:border-teal-500/40 bg-white dark:bg-slate-900 shadow-sm"
+        >
+          {/* Subtle Ambient Emerald/Teal Gradient Overlay */}
+          <LinearGradient
+            colors={isDark ? ['rgba(13,148,136,0.15)', 'rgba(13,148,136,0.02)'] : ['#F0FDFA', '#FFFFFF']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={StyleSheet.absoluteFill}
+          />
+
+          <View className="p-4 flex-row items-center">
+            {/* Glowing Home Icon Box */}
+            <View className="relative mr-3.5 shrink-0">
+              <View className="absolute -inset-1 rounded-[16px] bg-teal-400/25 blur-sm" />
+              <View className="h-[46px] w-[46px] items-center justify-center rounded-[14px] border border-teal-300 dark:border-teal-500/50 bg-teal-100 dark:bg-teal-950/80">
+                <Home size={21} color="#0D9488" strokeWidth={2.2} />
+              </View>
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.connectedLabel, { color: colors.textMuted, fontFamily: 'Inter-SemiBold' }]}>CONNECTED PROPERTY</Text>
-              <Text style={[styles.connectedName, { color: colors.textPrimary, fontFamily: 'Inter-Bold' }]}>
+
+            {/* Center Content: Label, Name & Unit, Address */}
+            <View className="min-w-0 flex-1 justify-center pr-2">
+              <View className="flex-row items-center justify-between mb-0.5">
+                <Text
+                  className="text-[11px] tracking-[0.8px] text-teal-700 dark:text-teal-400"
+                  style={{ fontFamily: 'Inter-Bold' }}
+                >
+                  CONNECTED PROPERTY
+                </Text>
+                <View className="flex-row items-center gap-1 rounded-full px-2 py-0.5 border border-emerald-300 dark:border-emerald-500/40 bg-emerald-100 dark:bg-emerald-950/60">
+                  <CheckCircle size={10} color="#059669" />
+                  <Text
+                    className="text-[10px] text-emerald-700 dark:text-emerald-300"
+                    style={{ fontFamily: 'Inter-Bold' }}
+                  >
+                    Verified
+                  </Text>
+                </View>
+              </View>
+
+              <Text
+                numberOfLines={1}
+                className="text-[15px] tracking-[-0.2px] text-slate-900 dark:text-white"
+                style={{ fontFamily: 'Inter-Bold' }}
+              >
                 {selectedProperty ? `${connectedName} · ${connectedUnit}` : 'No property connected'}
               </Text>
-              <Text style={[styles.connectedAddr, { color: colors.textSecondary, fontFamily: 'Inter-Regular' }]}>
+
+              <Text
+                numberOfLines={1}
+                className="text-[12.5px] mt-0.5 text-slate-500 dark:text-slate-400"
+                style={{ fontFamily: 'Inter-Regular' }}
+              >
                 {selectedProperty ? connectedAddress : 'Please connect your rental place to continue.'}
               </Text>
-            </View>
-            <View style={[styles.approvalBadge, { backgroundColor: colors.successLight }]}>
-              <CheckCircle size={12} color={colors.success} />
-              <Text style={[styles.approvalBadgeText, { color: colors.success, fontFamily: 'Inter-SemiBold' }]}>Mock Approved</Text>
             </View>
           </View>
         </Animated.View>
@@ -143,24 +239,82 @@ export default function DashboardScreen() {
         {unreadCount > 0 && (
           <Animated.View entering={FadeInUp.delay(200).duration(500)}>
             <Pressable
-              style={({ pressed }) => [styles.messagingCard, { backgroundColor: colors.surface, borderColor: colors.border, opacity: pressed ? 0.92 : 1, transform: [{ scale: pressed ? 0.985 : 1 }] }, SHADOWS.card]}
               onPress={() => router.push('/(tabs)/messages')}
+              className="mb-4 overflow-hidden rounded-[22px] border border-sky-300 dark:border-sky-500/40 bg-white dark:bg-slate-900 shadow-sm"
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.92 : 1,
+                transform: [{ scale: pressed ? 0.985 : 1 }],
+              })}
             >
-              <View style={[styles.messagingIcon, { backgroundColor: colors.accentLight }]}>
-                <MessageSquare size={18} color={colors.accent} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={[styles.messagingLabel, { color: colors.textMuted, fontFamily: 'Inter-SemiBold' }]}>MESSAGES</Text>
-                <Text style={[styles.messagingDesc, { color: colors.textPrimary, fontFamily: 'Inter-Medium' }]}>
-                  {unreadCount} unread {unreadCount === 1 ? 'message' : 'messages'} from your property manager
-                </Text>
-                {latestConversation && (
-                  <Text style={[styles.messagingPreview, { color: colors.textMuted, fontFamily: 'Inter-Regular' }]} numberOfLines={1}>
-                    {latestConversation.participantName}: {latestConversation.lastMessage}
+              <LinearGradient
+                colors={isDark ? ['rgba(2,132,199,0.15)', 'rgba(2,132,199,0.02)'] : ['#F0F9FF', '#FFFFFF']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={StyleSheet.absoluteFill}
+              />
+
+              <View className="flex-row items-center p-4">
+                <View className="relative mr-3.5 shrink-0">
+                  <View className="absolute -inset-1 rounded-[16px] bg-sky-400/25 blur-sm" />
+                  <View className="h-[46px] w-[46px] items-center justify-center rounded-[14px] border border-sky-300 dark:border-sky-500/50 bg-sky-100 dark:bg-sky-950/80">
+                    <MessageSquare size={21} color="#0284C7" strokeWidth={2.2} />
+                  </View>
+                  <View className="absolute -top-1 -right-1 h-5 min-w-[20px] items-center justify-center rounded-full bg-sky-500 px-1 border-2 border-white dark:border-slate-900">
+                    <Text className="text-[10px] text-white" style={{ fontFamily: 'Inter-Bold' }}>
+                      {unreadCount}
+                    </Text>
+                  </View>
+                </View>
+
+                <View className="min-w-0 flex-1 justify-center pr-2">
+                  <View className="flex-row items-center justify-between mb-0.5">
+                    <Text
+                      className="text-[11px] tracking-[0.8px]"
+                      style={{ color: colors.textMuted, fontFamily: 'Inter-Bold' }}
+                    >
+                      NEW MESSAGES
+                    </Text>
+                    <View className="rounded-full px-2 py-0.5 border border-sky-300 dark:border-sky-500/40 bg-sky-100 dark:bg-sky-900/40">
+                      <Text
+                        className="text-[10px]"
+                        style={{ color: '#0284C7', fontFamily: 'Inter-Bold' }}
+                      >
+                        {unreadCount} UNREAD
+                      </Text>
+                    </View>
+                  </View>
+
+                  <Text
+                    numberOfLines={1}
+                    className="text-[14.5px] tracking-[-0.2px]"
+                    style={{ color: colors.textPrimary, fontFamily: 'Inter-Bold' }}
+                  >
+                    {latestConversation ? latestConversation.participantName : 'Property Manager'}
                   </Text>
-                )}
+
+                  {latestConversation ? (
+                    <Text
+                      numberOfLines={1}
+                      className="text-[12.5px] mt-0.5"
+                      style={{ color: colors.textSecondary, fontFamily: 'Inter-Regular' }}
+                    >
+                      {latestConversation.lastMessage}
+                    </Text>
+                  ) : (
+                    <Text
+                      numberOfLines={1}
+                      className="text-[12.5px] mt-0.5"
+                      style={{ color: colors.textSecondary, fontFamily: 'Inter-Regular' }}
+                    >
+                      You have pending updates regarding your tenancy.
+                    </Text>
+                  )}
+                </View>
+
+                <View className="h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-sky-100/70 dark:bg-white/10">
+                  <ChevronRight size={16} color={colors.textMuted} strokeWidth={2.2} />
+                </View>
               </View>
-              <ChevronRight size={18} color={colors.textMuted} />
             </Pressable>
           </Animated.View>
         )}
@@ -168,30 +322,72 @@ export default function DashboardScreen() {
         {emergencyRequests.length > 0 && (
           <Animated.View entering={FadeIn.delay(300).duration(400)}>
             <Pressable
-              style={[styles.emergencyBanner, { backgroundColor: colors.dangerLight }]}
               onPress={() => router.push({ pathname: '/request-detail', params: { id: emergencyRequests[0].id } })}
+              className="mb-4 overflow-hidden rounded-[22px] border border-rose-300 dark:border-rose-500/40 bg-white dark:bg-slate-900 shadow-sm"
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.92 : 1,
+                transform: [{ scale: pressed ? 0.985 : 1 }],
+              })}
             >
               <LinearGradient
-                colors={['rgba(220,38,38,0.08)', 'rgba(220,38,38,0.02)']}
-                style={StyleSheet.absoluteFill}
+                colors={isDark ? ['rgba(244,63,94,0.18)', 'rgba(244,63,94,0.03)'] : ['#FFF1F2', '#FFFFFF']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
+                style={StyleSheet.absoluteFill}
               />
-              <View style={styles.emergencyIconWrap}>
-                <AlertTriangle size={16} color="#FFFFFF" />
+
+              <View className="flex-row items-center p-4">
+                <View className="relative mr-3.5 shrink-0">
+                  <View className="absolute -inset-1 rounded-[16px] bg-rose-500/25 blur-sm" />
+                  <View className="h-[46px] w-[46px] items-center justify-center rounded-[14px] border border-rose-300 dark:border-rose-500/50 bg-rose-500 shadow-sm">
+                    <AlertTriangle size={22} color="#FFFFFF" strokeWidth={2.4} />
+                  </View>
+                </View>
+
+                <View className="min-w-0 flex-1 justify-center pr-2">
+                  <View className="flex-row items-center justify-between mb-0.5">
+                    <Text
+                      className="text-[11px] tracking-[0.8px] text-rose-600 dark:text-rose-400"
+                      style={{ fontFamily: 'Inter-Bold' }}
+                    >
+                      URGENT ATTENTION
+                    </Text>
+                    <View className="rounded-full px-2 py-0.5 border border-rose-300 dark:border-rose-500/40 bg-rose-100 dark:bg-rose-950/60">
+                      <Text
+                        className="text-[10px] text-rose-600 dark:text-rose-300"
+                        style={{ fontFamily: 'Inter-Bold' }}
+                      >
+                        {emergencyRequests.length} {emergencyRequests.length === 1 ? 'ACTIVE' : 'ACTIVES'}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <Text
+                    numberOfLines={1}
+                    className="text-[14.5px] tracking-[-0.2px] text-rose-950 dark:text-rose-100"
+                    style={{ fontFamily: 'Inter-Bold' }}
+                  >
+                    {emergencyRequests.length} Emergency {emergencyRequests.length === 1 ? 'Issue' : 'Issues'}
+                  </Text>
+
+                  <Text
+                    numberOfLines={1}
+                    className="text-[12.5px] mt-0.5 text-rose-800/80 dark:text-rose-200/75"
+                    style={{ fontFamily: 'Inter-Regular' }}
+                  >
+                    {emergencyRequests[0].title}
+                  </Text>
+                </View>
+
+                <View className="h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-rose-100 dark:bg-white/10">
+                  <ChevronRight size={16} color={isDark ? '#FDA4AF' : '#E11D48'} strokeWidth={2.4} />
+                </View>
               </View>
-              <View style={{ flex: 1 }}>
-                <Text style={[styles.emergencyTitle, { color: colors.danger, fontFamily: 'Inter-Bold' }]}>
-                  {emergencyRequests.length} Emergency {emergencyRequests.length === 1 ? 'Issue' : 'Issues'}
-                </Text>
-                <Text style={[styles.emergencyDesc, { color: colors.danger, fontFamily: 'Inter-Regular' }]}>{emergencyRequests[0].title}</Text>
-              </View>
-              <ChevronRight size={18} color={colors.danger} />
             </Pressable>
           </Animated.View>
         )}
 
-        <View style={styles.statsRow}>
+        <View className="flex-row flex-wrap justify-between mb-2">
           <StatCard label="Total" value={total} color="#2563EB" icon={<BarChart3 size={18} color="#2563EB" />} index={0} />
           <StatCard label="Open" value={open} color="#0284C7" icon={<AlertCircle size={18} color="#0284C7" />} index={1} />
           <StatCard label="Active" value={inProgress} color="#D97706" icon={<Clock size={18} color="#D97706" />} index={2} />
@@ -199,82 +395,307 @@ export default function DashboardScreen() {
         </View>
 
         <SectionHeader title="Quick Actions" />
-        <View style={styles.actionsGrid}>
-          <QuickAction colors={colors} icon={<Plus size={20} color="#FFFFFF" />} label="Raise Request" gradient={['#1E6B5A', '#0D9488']} onPress={() => router.push('/create-request')} />
-          <QuickAction colors={colors} icon={<ClipboardList size={20} color="#FFFFFF" />} label="View Requests" gradient={['#0369A1', '#0284C7']} onPress={() => router.push('/(tabs)/requests')} />
-          <QuickAction colors={colors} icon={<MessageSquare size={20} color="#FFFFFF" />} label="Message Landlord" gradient={['#4338CA', '#6366F1']} onPress={() => router.push('/new-message')} />
-          <QuickAction colors={colors} icon={<Wallet size={20} color="#FFFFFF" />} label="Rent Overview" gradient={['#B45309', '#D97706']} onPress={() => router.push('/(tabs)/rent')} />
+        <View className="flex-row flex-wrap justify-between mb-4">
+          <QuickAction
+            icon={<Plus size={20} color="#FFFFFF" strokeWidth={2.4} />}
+            label="Raise Request"
+            subtitle="Submit new ticket"
+            gradient={['#0F766E', '#0D9488']}
+            onPress={() => router.push('/create-request')}
+          />
+          <QuickAction
+            icon={<ClipboardList size={20} color="#FFFFFF" strokeWidth={2.2} />}
+            label="View Requests"
+            subtitle="Track status & logs"
+            gradient={['#0369A1', '#0284C7']}
+            onPress={() => router.push('/(tabs)/requests')}
+          />
+          <QuickAction
+            icon={<MessageSquare size={20} color="#FFFFFF" strokeWidth={2.2} />}
+            label="Message Landlord"
+            subtitle="Direct chat channel"
+            gradient={['#4338CA', '#6366F1']}
+            onPress={() => router.push('/new-message')}
+          />
+          <QuickAction
+            icon={<Wallet size={20} color="#FFFFFF" strokeWidth={2.2} />}
+            label="Rent Overview"
+            subtitle="Payments & history"
+            gradient={['#B45309', '#D97706']}
+            onPress={() => router.push('/(tabs)/rent')}
+          />
         </View>
 
         <SectionHeader title="Recent Activity" actionLabel="View All" onAction={() => router.push('/activity-history')} />
         {recentActivity.map((item, i) => (
           <Animated.View key={item.id} entering={FadeInUp.delay(400 + i * 80).duration(400)}>
             <Pressable
-              style={[styles.activityItem, { backgroundColor: colors.surface }, SHADOWS.soft]}
               onPress={() => item.linkedRequestId && router.push({ pathname: '/request-detail', params: { id: item.linkedRequestId } })}
+              className="mb-3 overflow-hidden rounded-[20px] border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm"
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.92 : 1,
+                transform: [{ scale: pressed ? 0.985 : 1 }],
+              })}
             >
-              <View style={[styles.activityDot, { backgroundColor: i === 0 ? colors.primary : colors.textMuted + '40' }]}>
-                {i === 0 && <View style={styles.activityPulse} />}
+              <View className="p-4 flex-row items-center gap-3.5">
+                {/* Status Indicator Dot with Pulse Aura */}
+                <View className="relative shrink-0">
+                  {i === 0 && (
+                    <View className="absolute -inset-1 rounded-full bg-teal-400/30 blur-sm" />
+                  )}
+                  <View
+                    className={`h-3 w-3 rounded-full ${
+                      i === 0
+                        ? 'bg-teal-600 dark:bg-teal-400'
+                        : 'bg-slate-300 dark:bg-slate-600'
+                    }`}
+                  />
+                </View>
+
+                {/* Activity Details */}
+                <View className="flex-1 min-w-0 pr-1">
+                  <Text
+                    numberOfLines={1}
+                    className="text-[14.5px] tracking-[-0.2px] text-slate-900 dark:text-white"
+                    style={{ fontFamily: 'Inter-Bold' }}
+                  >
+                    {item.title}
+                  </Text>
+                  <Text
+                    numberOfLines={2}
+                    className="text-[12.5px] leading-[17px] text-slate-500 dark:text-slate-400 mt-0.5"
+                    style={{ fontFamily: 'Inter-Regular' }}
+                  >
+                    {item.description}
+                  </Text>
+                  <Text
+                    className="text-[11px] text-slate-400 dark:text-slate-500 mt-1.5"
+                    style={{ fontFamily: 'Inter-Medium' }}
+                  >
+                    {item.timestamp}
+                  </Text>
+                </View>
+
+                {/* Right Action Chevron */}
+                <View className="h-7 w-7 shrink-0 items-center justify-center rounded-[10px] bg-slate-100 dark:bg-white/5">
+                  <ChevronRight size={14} color={isDark ? '#94A3B8' : '#64748B'} strokeWidth={2.4} />
+                </View>
               </View>
-              <View style={{ flex: 1 }}>
-                <Text style={[styles.activityTitle, { color: colors.textPrimary, fontFamily: 'Inter-SemiBold' }]}>{item.title}</Text>
-                <Text style={[styles.activityDesc, { color: colors.textSecondary, fontFamily: 'Inter-Regular' }]}>{item.description}</Text>
-                <Text style={[styles.activityTime, { color: colors.textMuted, fontFamily: 'Inter-Regular' }]}>{item.timestamp}</Text>
-              </View>
-              <ChevronRight size={14} color={colors.textMuted} />
             </Pressable>
           </Animated.View>
         ))}
 
         <SectionHeader title="Announcements" actionLabel="View All" onAction={() => router.push('/announcements')} />
-        {latestAnnouncements.map((ann, i) => (
-          <Animated.View key={ann.id} entering={FadeInUp.delay(600 + i * 80).duration(400)}>
-            <View style={[styles.announcementCard, { backgroundColor: colors.surface }, SHADOWS.soft]}>
-              <View style={styles.announcementHeader}>
-                <View style={[styles.announcementIcon, { backgroundColor: (ann.priority === 'High' ? colors.danger : colors.warning) + '14' }]}>
-                  <Megaphone size={14} color={ann.priority === 'High' ? colors.danger : colors.warning} />
+        {latestAnnouncements.map((ann, i) => {
+          const isHigh = ann.priority === 'High';
+          return (
+            <Animated.View key={ann.id} entering={FadeInUp.delay(600 + i * 80).duration(400)}>
+              <View className="mb-3 overflow-hidden rounded-[20px] border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm p-4">
+                <View className="flex-row items-center gap-3 mb-2.5">
+                  <View
+                    className={`h-9 w-9 items-center justify-center rounded-[12px] ${
+                      isHigh
+                        ? 'bg-rose-100 dark:bg-rose-950/60'
+                        : 'bg-amber-100 dark:bg-amber-950/60'
+                    }`}
+                  >
+                    <Megaphone
+                      size={16}
+                      color={isHigh ? '#E11D48' : '#D97706'}
+                      strokeWidth={2.2}
+                    />
+                  </View>
+
+                  <View className="flex-1 min-w-0 pr-1">
+                    <Text
+                      numberOfLines={1}
+                      className="text-[14px] text-slate-900 dark:text-white"
+                      style={{ fontFamily: 'Inter-Bold' }}
+                    >
+                      {ann.title}
+                    </Text>
+                    <Text
+                      className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5"
+                      style={{ fontFamily: 'Inter-Medium' }}
+                    >
+                      {ann.date}
+                    </Text>
+                  </View>
+
+                  <View
+                    className={`px-2 py-0.5 rounded-full border ${
+                      isHigh
+                        ? 'border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/50'
+                        : 'border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/50'
+                    }`}
+                  >
+                    <Text
+                      className={`text-[9.5px] ${
+                        isHigh
+                          ? 'text-rose-600 dark:text-rose-400'
+                          : 'text-amber-600 dark:text-amber-400'
+                      }`}
+                      style={{ fontFamily: 'Inter-Bold' }}
+                    >
+                      {ann.priority}
+                    </Text>
+                  </View>
                 </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={[styles.announcementTitle, { color: colors.textPrimary, fontFamily: 'Inter-SemiBold' }]} numberOfLines={1}>{ann.title}</Text>
-                  <Text style={[styles.announcementMeta, { color: colors.textMuted, fontFamily: 'Inter-Regular' }]}>{ann.date}</Text>
-                </View>
-                <View style={[styles.priorityDot, { backgroundColor: ann.priority === 'High' ? colors.danger : colors.warning }]} />
+
+                <Text
+                  numberOfLines={2}
+                  className="text-[12.5px] leading-[18px] text-slate-600 dark:text-slate-400"
+                  style={{ fontFamily: 'Inter-Regular' }}
+                >
+                  {ann.message}
+                </Text>
               </View>
-              <Text style={[styles.announcementBody, { color: colors.textSecondary, fontFamily: 'Inter-Regular' }]} numberOfLines={2}>{ann.message}</Text>
+            </Animated.View>
+          );
+        })}
+
+        {total > 0 && (
+          <Animated.View entering={FadeInUp.delay(800).duration(400)}>
+            <View className="mt-2 mb-8 overflow-hidden rounded-[22px] border border-teal-300 dark:border-teal-500/40 bg-white dark:bg-slate-900 shadow-sm">
+              <LinearGradient
+                colors={isDark ? ['rgba(13,148,136,0.16)', 'rgba(13,148,136,0.02)'] : ['#F0FDFA', '#FFFFFF']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={{ padding: 18 }}
+              >
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-center gap-3.5 flex-1 pr-3">
+                    <View className="relative shrink-0">
+                      <View className="absolute -inset-1 rounded-[14px] bg-teal-400/25 blur-sm" />
+                      <View className="h-[44px] w-[44px] items-center justify-center rounded-[13px] bg-teal-100 dark:bg-teal-950/80 border border-teal-300 dark:border-teal-500/40">
+                        <TrendingUp size={21} color="#0D9488" strokeWidth={2.4} />
+                      </View>
+                    </View>
+
+                    <View className="flex-1 min-w-0">
+                      <Text
+                        numberOfLines={1}
+                        className="text-[14.5px] text-slate-900 dark:text-white"
+                        style={{ fontFamily: 'Inter-Bold' }}
+                      >
+                        Resolution Rate
+                      </Text>
+                      <Text
+                        numberOfLines={1}
+                        className="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5"
+                        style={{ fontFamily: 'Inter-Medium' }}
+                      >
+                        {resolved} of {total} requests resolved
+                      </Text>
+                    </View>
+                  </View>
+
+                  <Text
+                    className="text-[24px] tracking-[-0.5px] text-teal-600 dark:text-teal-400 shrink-0"
+                    style={{ fontFamily: 'Inter-Bold' }}
+                  >
+                    {Math.round((resolved / total) * 100)}%
+                  </Text>
+                </View>
+
+                {/* Progress Track Bar */}
+                <View className="mt-3.5 h-[6px] w-full rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                  <LinearGradient
+                    colors={['#0F766E', '#14B8A6']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={{
+                      height: '100%',
+                      width: `${Math.min(Math.round((resolved / total) * 100), 100)}%`,
+                      borderRadius: 999,
+                    }}
+                  />
+                </View>
+              </LinearGradient>
             </View>
           </Animated.View>
-        ))}
-
-        <Animated.View entering={FadeInUp.delay(800).duration(400)}>
-          <LinearGradient
-            colors={isDark ? ['rgba(52,211,153,0.08)', 'rgba(52,211,153,0.02)'] : ['rgba(30,107,90,0.06)', 'rgba(13,148,136,0.02)']}
-            style={styles.insightCard}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          >
-            <View style={styles.insightLeft}>
-              <TrendingUp size={20} color={colors.primary} />
-              <View>
-                <Text style={[styles.insightTitle, { color: colors.textPrimary, fontFamily: 'Inter-SemiBold' }]}>Resolution Rate</Text>
-                <Text style={[styles.insightDesc, { color: colors.textMuted, fontFamily: 'Inter-Regular' }]}>This quarter</Text>
-              </View>
-            </View>
-            <Text style={[styles.insightValue, { color: colors.primary, fontFamily: 'Inter-ExtraBold' }]}>
-              {Math.round((resolved / total) * 100)}%
-            </Text>
-          </LinearGradient>
-        </Animated.View>
+        )}
       </View>
     </ScrollView>
   );
 }
 
-function QuickAction({ colors, icon, label, gradient, onPress }: { colors: any; icon: React.ReactNode; label: string; gradient: [string, string]; onPress: () => void }) {
+function QuickAction({
+  icon,
+  label,
+  subtitle,
+  gradient,
+  onPress,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  subtitle?: string;
+  gradient: [string, string];
+  onPress: () => void;
+}) {
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.quickAction, { opacity: pressed ? 0.9 : 1, transform: [{ scale: pressed ? 0.96 : 1 }] }]}>
-      <LinearGradient colors={gradient} style={styles.quickActionGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-        <View style={styles.quickActionIcon}>{icon}</View>
-        <Text style={[styles.quickActionLabel, { fontFamily: 'Inter-SemiBold' }]}>{label}</Text>
+    <Pressable
+      onPress={onPress}
+      className="w-[48%] mb-3 overflow-hidden rounded-[22px]"
+      style={({ pressed }) => ({
+        opacity: pressed ? 0.92 : 1,
+        transform: [{ scale: pressed ? 0.97 : 1 }],
+      })}
+    >
+      <LinearGradient
+        colors={gradient}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{
+          padding: 16,
+          borderRadius: 22,
+          minHeight: 118,
+          justifyContent: 'space-between',
+        }}
+      >
+        {/* Top: Glassmorphic Icon Box */}
+        <View
+          style={{
+            width: 42,
+            height: 42,
+            borderRadius: 13,
+            backgroundColor: 'rgba(255,255,255,0.22)',
+            borderWidth: 1,
+            borderColor: 'rgba(255,255,255,0.32)',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {icon}
+        </View>
+
+        {/* Bottom: Title & Subtitle */}
+        <View style={{ marginTop: 12 }}>
+          <Text
+            numberOfLines={1}
+            style={{
+              color: '#FFFFFF',
+              fontSize: 14,
+              fontFamily: 'Inter-Bold',
+              letterSpacing: -0.2,
+            }}
+          >
+            {label}
+          </Text>
+          {subtitle ? (
+            <Text
+              numberOfLines={1}
+              style={{
+                color: 'rgba(255,255,255,0.82)',
+                fontSize: 11,
+                fontFamily: 'Inter-Medium',
+                marginTop: 2,
+              }}
+            >
+              {subtitle}
+            </Text>
+          ) : null}
+        </View>
       </LinearGradient>
     </Pressable>
   );
