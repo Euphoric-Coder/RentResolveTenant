@@ -6,7 +6,7 @@ import Animated, { FadeInDown, FadeInUp, FadeIn } from 'react-native-reanimated'
 import {
   Plus, ClipboardList, Wallet, AlertTriangle, Bell,
   Clock, CheckCircle, AlertCircle, BarChart3, Megaphone,
-  ChevronRight, ArrowRight, TrendingUp, Zap, Home, MessageSquare,
+  ChevronRight, ArrowRight, TrendingUp, Home, MessageSquare,
 } from 'lucide-react-native';
 import { useAuth } from '@/context/AuthContext';
 import { useMessaging } from '@/context/MessagingContext';
@@ -14,12 +14,11 @@ import { useTheme } from '@/context/ThemeContext';
 import { MOCK_REQUESTS, MOCK_ANNOUNCEMENTS, MOCK_ACTIVITY, MOCK_PROPERTY, MOCK_RENT_PAYMENTS } from '@/data/mockData';
 import { StatCard } from '@/components/StatCard';
 import { SectionHeader } from '@/components/SectionHeader';
-import { SHADOWS } from '@/constants/theme';
 
 export default function DashboardScreen() {
   const { user, selectedProperty } = useAuth();
   const { conversations, unreadCount } = useMessaging();
-  const { colors, isDark } = useTheme();
+  const { isDark } = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
@@ -47,46 +46,73 @@ export default function DashboardScreen() {
 
   return (
     <ScrollView
-      style={{ backgroundColor: colors.background }}
+      className="flex-1 bg-slate-50 dark:bg-slate-950"
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: 32 }}
+      contentContainerStyle={{ paddingBottom: 40 }}
     >
-      <View style={styles.heroWrap}>
+      {/* Hero Header Section */}
+      <View className="relative">
         <LinearGradient
-          colors={isDark ? ['#134E4A', '#0F766E', '#064E3B'] : ['#1E6B5A', '#0D9488', '#115E59']}
+          colors={
+            isDark
+              ? ['#134E4A', '#0F766E', '#064E3B']
+              : ['#1E6B5A', '#0D9488', '#115E59']
+          }
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={styles.heroSection}
+          className="rounded-b-[32px] pb-8 overflow-hidden relative"
         >
-          <View style={[styles.heroBg1]} />
-          <View style={[styles.heroBg2]} />
+          {/* Ambient Background Circles */}
+          <View className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/[0.05]" />
+          <View className="absolute bottom-5 -left-5 h-24 w-24 rounded-full bg-white/[0.03]" />
 
-          <View style={{ paddingTop: insets.top + 16, paddingHorizontal: 20, paddingBottom: 24 }}>
-            <Animated.View entering={FadeInDown.duration(600)} style={styles.heroTopRow}>
-              <View style={{ flex: 1 }}>
-                <Text style={[styles.greeting, { fontFamily: 'Inter-Regular' }]}>{greetingTime()},</Text>
-                <Text style={[styles.userName, { fontFamily: 'Inter-ExtraBold' }]}>{user?.name || 'Tenant'}</Text>
-                <View style={styles.propertyPill}>
-                  <View style={styles.propertyDot} />
-                  <Text style={[styles.propertyText, { fontFamily: 'Inter-Medium' }]}>
-                    {connectedName} - {connectedUnit}
+          <View style={{ paddingTop: insets.top + 16 }} className="px-5 pb-6">
+            <Animated.View
+              entering={FadeInDown.duration(600)}
+              className="flex-row items-start justify-between"
+            >
+              <View className="flex-1 pr-3">
+                <Text
+                  className="text-[14px] text-white/70"
+                  style={{ fontFamily: 'Inter-Regular' }}
+                >
+                  {greetingTime()},
+                </Text>
+                <Text
+                  className="text-[28px] text-white tracking-[-0.5px] mt-0.5"
+                  style={{ fontFamily: 'Inter-ExtraBold' }}
+                >
+                  {user?.name || 'Tenant'}
+                </Text>
+                <View className="flex-row items-center gap-1.5 self-start rounded-full bg-white/10 dark:bg-white/15 px-3 py-1.5 mt-2.5 border border-white/10">
+                  <View className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  <Text
+                    numberOfLines={1}
+                    className="text-[12px] text-white/90"
+                    style={{ fontFamily: 'Inter-Medium' }}
+                  >
+                    {connectedName} · {connectedUnit}
                   </Text>
                 </View>
               </View>
-              <Pressable style={styles.bellButton} onPress={() => router.push('/notifications')}>
-                <Bell size={22} color="#FFFFFF" />
-                <View style={styles.bellDot} />
+
+              <Pressable
+                onPress={() => router.push('/notifications')}
+                className="h-12 w-12 items-center justify-center rounded-[16px] bg-white/10 dark:bg-white/15 border border-white/15 relative active:opacity-80"
+              >
+                <Bell size={22} color="#FFFFFF" strokeWidth={2.2} />
+                <View className="absolute top-3 right-3 h-2.5 w-2.5 rounded-full bg-rose-500 border-2 border-[#1E6B5A] dark:border-[#134E4A]" />
               </Pressable>
             </Animated.View>
           </View>
         </LinearGradient>
-
       </View>
 
+      {/* Upcoming Rent Floating Banner */}
       {nextRent && (
         <Animated.View
           entering={FadeInUp.delay(200).duration(500).springify()}
-          className="mx-5 -mt-7 mb-2 overflow-hidden rounded-[24px] border border-amber-300 dark:border-amber-500/40 bg-white dark:bg-slate-900"
+          className="mt-5 mx-5 mb-2 overflow-hidden rounded-[24px] border border-amber-300 dark:border-amber-500/40 bg-white dark:bg-slate-900"
           style={{
             shadowColor: '#D97706',
             shadowOffset: { width: 0, height: 4 },
@@ -95,16 +121,18 @@ export default function DashboardScreen() {
             elevation: 6,
           }}
         >
-          {/* Subtle Ambient Amber/Golden Gradient */}
           <LinearGradient
-            colors={isDark ? ['rgba(217,119,6,0.14)', 'rgba(217,119,6,0.02)'] : ['#FFFDF7', '#FFFFFF']}
+            colors={
+              isDark
+                ? ['rgba(217,119,6,0.14)', 'rgba(217,119,6,0.02)']
+                : ['#FFFDF7', '#FFFFFF']
+            }
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={StyleSheet.absoluteFill}
           />
 
           <View className="flex-row items-center justify-between p-4">
-            {/* Left Content: Glowing Icon + Vertical Details */}
             <View className="flex-1 flex-row items-center gap-3 pr-3 min-w-0">
               <View className="relative shrink-0">
                 <View className="absolute -inset-1 rounded-[16px] bg-amber-400/25 blur-sm" />
@@ -139,7 +167,6 @@ export default function DashboardScreen() {
               </View>
             </View>
 
-            {/* Right Action Button */}
             <Pressable
               onPress={() => router.push('/(tabs)/rent')}
               className="overflow-hidden rounded-[14px] shadow-sm shrink-0"
@@ -175,21 +202,25 @@ export default function DashboardScreen() {
         </Animated.View>
       )}
 
-      <View style={styles.content}>
+      {/* Main Content Area */}
+      <View className="px-5 pt-4">
+        {/* Connected Property Card */}
         <Animated.View
           entering={FadeInUp.delay(150).duration(500)}
           className="mb-4 overflow-hidden rounded-[22px] border border-teal-300 dark:border-teal-500/40 bg-white dark:bg-slate-900 shadow-sm"
         >
-          {/* Subtle Ambient Emerald/Teal Gradient Overlay */}
           <LinearGradient
-            colors={isDark ? ['rgba(13,148,136,0.15)', 'rgba(13,148,136,0.02)'] : ['#F0FDFA', '#FFFFFF']}
+            colors={
+              isDark
+                ? ['rgba(13,148,136,0.15)', 'rgba(13,148,136,0.02)']
+                : ['#F0FDFA', '#FFFFFF']
+            }
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={StyleSheet.absoluteFill}
           />
 
           <View className="p-4 flex-row items-center">
-            {/* Glowing Home Icon Box */}
             <View className="relative mr-3.5 shrink-0">
               <View className="absolute -inset-1 rounded-[16px] bg-teal-400/25 blur-sm" />
               <View className="h-[46px] w-[46px] items-center justify-center rounded-[14px] border border-teal-300 dark:border-teal-500/50 bg-teal-100 dark:bg-teal-950/80">
@@ -197,7 +228,6 @@ export default function DashboardScreen() {
               </View>
             </View>
 
-            {/* Center Content: Label, Name & Unit, Address */}
             <View className="min-w-0 flex-1 justify-center pr-2">
               <View className="flex-row items-center justify-between mb-0.5">
                 <Text
@@ -222,7 +252,9 @@ export default function DashboardScreen() {
                 className="text-[15px] tracking-[-0.2px] text-slate-900 dark:text-white"
                 style={{ fontFamily: 'Inter-Bold' }}
               >
-                {selectedProperty ? `${connectedName} · ${connectedUnit}` : 'No property connected'}
+                {selectedProperty
+                  ? `${connectedName} · ${connectedUnit}`
+                  : 'No property connected'}
               </Text>
 
               <Text
@@ -230,12 +262,15 @@ export default function DashboardScreen() {
                 className="text-[12.5px] mt-0.5 text-slate-500 dark:text-slate-400"
                 style={{ fontFamily: 'Inter-Regular' }}
               >
-                {selectedProperty ? connectedAddress : 'Please connect your rental place to continue.'}
+                {selectedProperty
+                  ? connectedAddress
+                  : 'Please connect your rental place to continue.'}
               </Text>
             </View>
           </View>
         </Animated.View>
 
+        {/* Unread Messaging Notification */}
         {unreadCount > 0 && (
           <Animated.View entering={FadeInUp.delay(200).duration(500)}>
             <Pressable
@@ -247,7 +282,11 @@ export default function DashboardScreen() {
               })}
             >
               <LinearGradient
-                colors={isDark ? ['rgba(2,132,199,0.15)', 'rgba(2,132,199,0.02)'] : ['#F0F9FF', '#FFFFFF']}
+                colors={
+                  isDark
+                    ? ['rgba(2,132,199,0.15)', 'rgba(2,132,199,0.02)']
+                    : ['#F0F9FF', '#FFFFFF']
+                }
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={StyleSheet.absoluteFill}
@@ -257,10 +296,17 @@ export default function DashboardScreen() {
                 <View className="relative mr-3.5 shrink-0">
                   <View className="absolute -inset-1 rounded-[16px] bg-sky-400/25 blur-sm" />
                   <View className="h-[46px] w-[46px] items-center justify-center rounded-[14px] border border-sky-300 dark:border-sky-500/50 bg-sky-100 dark:bg-sky-950/80">
-                    <MessageSquare size={21} color="#0284C7" strokeWidth={2.2} />
+                    <MessageSquare
+                      size={21}
+                      color="#0284C7"
+                      strokeWidth={2.2}
+                    />
                   </View>
                   <View className="absolute -top-1 -right-1 h-5 min-w-[20px] items-center justify-center rounded-full bg-sky-500 px-1 border-2 border-white dark:border-slate-900">
-                    <Text className="text-[10px] text-white" style={{ fontFamily: 'Inter-Bold' }}>
+                    <Text
+                      className="text-[10px] text-white"
+                      style={{ fontFamily: 'Inter-Bold' }}
+                    >
                       {unreadCount}
                     </Text>
                   </View>
@@ -269,15 +315,15 @@ export default function DashboardScreen() {
                 <View className="min-w-0 flex-1 justify-center pr-2">
                   <View className="flex-row items-center justify-between mb-0.5">
                     <Text
-                      className="text-[11px] tracking-[0.8px]"
-                      style={{ color: colors.textMuted, fontFamily: 'Inter-Bold' }}
+                      className="text-[11px] tracking-[0.8px] text-sky-700 dark:text-sky-400"
+                      style={{ fontFamily: 'Inter-Bold' }}
                     >
                       NEW MESSAGES
                     </Text>
                     <View className="rounded-full px-2 py-0.5 border border-sky-300 dark:border-sky-500/40 bg-sky-100 dark:bg-sky-900/40">
                       <Text
-                        className="text-[10px]"
-                        style={{ color: '#0284C7', fontFamily: 'Inter-Bold' }}
+                        className="text-[10px] text-sky-600 dark:text-sky-400"
+                        style={{ fontFamily: 'Inter-Bold' }}
                       >
                         {unreadCount} UNREAD
                       </Text>
@@ -286,43 +332,47 @@ export default function DashboardScreen() {
 
                   <Text
                     numberOfLines={1}
-                    className="text-[14.5px] tracking-[-0.2px]"
-                    style={{ color: colors.textPrimary, fontFamily: 'Inter-Bold' }}
+                    className="text-[14.5px] tracking-[-0.2px] text-slate-900 dark:text-white"
+                    style={{ fontFamily: 'Inter-Bold' }}
                   >
-                    {latestConversation ? latestConversation.participantName : 'Property Manager'}
+                    {latestConversation
+                      ? latestConversation.participantName
+                      : 'Property Manager'}
                   </Text>
 
-                  {latestConversation ? (
-                    <Text
-                      numberOfLines={1}
-                      className="text-[12.5px] mt-0.5"
-                      style={{ color: colors.textSecondary, fontFamily: 'Inter-Regular' }}
-                    >
-                      {latestConversation.lastMessage}
-                    </Text>
-                  ) : (
-                    <Text
-                      numberOfLines={1}
-                      className="text-[12.5px] mt-0.5"
-                      style={{ color: colors.textSecondary, fontFamily: 'Inter-Regular' }}
-                    >
-                      You have pending updates regarding your tenancy.
-                    </Text>
-                  )}
+                  <Text
+                    numberOfLines={1}
+                    className="text-[12.5px] mt-0.5 text-slate-500 dark:text-slate-400"
+                    style={{ fontFamily: 'Inter-Regular' }}
+                  >
+                    {latestConversation
+                      ? latestConversation.lastMessage
+                      : 'You have pending updates regarding your tenancy.'}
+                  </Text>
                 </View>
 
                 <View className="h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-sky-100/70 dark:bg-white/10">
-                  <ChevronRight size={16} color={colors.textMuted} strokeWidth={2.2} />
+                  <ChevronRight
+                    size={16}
+                    color={isDark ? '#94A3B8' : '#0284C7'}
+                    strokeWidth={2.2}
+                  />
                 </View>
               </View>
             </Pressable>
           </Animated.View>
         )}
 
+        {/* Emergency Notice Card */}
         {emergencyRequests.length > 0 && (
           <Animated.View entering={FadeIn.delay(300).duration(400)}>
             <Pressable
-              onPress={() => router.push({ pathname: '/request-detail', params: { id: emergencyRequests[0].id } })}
+              onPress={() =>
+                router.push({
+                  pathname: '/request-detail',
+                  params: { id: emergencyRequests[0].id },
+                })
+              }
               className="mb-4 overflow-hidden rounded-[22px] border border-rose-300 dark:border-rose-500/40 bg-white dark:bg-slate-900 shadow-sm"
               style={({ pressed }) => ({
                 opacity: pressed ? 0.92 : 1,
@@ -330,7 +380,11 @@ export default function DashboardScreen() {
               })}
             >
               <LinearGradient
-                colors={isDark ? ['rgba(244,63,94,0.18)', 'rgba(244,63,94,0.03)'] : ['#FFF1F2', '#FFFFFF']}
+                colors={
+                  isDark
+                    ? ['rgba(244,63,94,0.18)', 'rgba(244,63,94,0.03)']
+                    : ['#FFF1F2', '#FFFFFF']
+                }
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={StyleSheet.absoluteFill}
@@ -340,7 +394,11 @@ export default function DashboardScreen() {
                 <View className="relative mr-3.5 shrink-0">
                   <View className="absolute -inset-1 rounded-[16px] bg-rose-500/25 blur-sm" />
                   <View className="h-[46px] w-[46px] items-center justify-center rounded-[14px] border border-rose-300 dark:border-rose-500/50 bg-rose-500 shadow-sm">
-                    <AlertTriangle size={22} color="#FFFFFF" strokeWidth={2.4} />
+                    <AlertTriangle
+                      size={22}
+                      color="#FFFFFF"
+                      strokeWidth={2.4}
+                    />
                   </View>
                 </View>
 
@@ -357,7 +415,8 @@ export default function DashboardScreen() {
                         className="text-[10px] text-rose-600 dark:text-rose-300"
                         style={{ fontFamily: 'Inter-Bold' }}
                       >
-                        {emergencyRequests.length} {emergencyRequests.length === 1 ? 'ACTIVE' : 'ACTIVES'}
+                        {emergencyRequests.length}{' '}
+                        {emergencyRequests.length === 1 ? 'ACTIVE' : 'ACTIVES'}
                       </Text>
                     </View>
                   </View>
@@ -367,7 +426,8 @@ export default function DashboardScreen() {
                     className="text-[14.5px] tracking-[-0.2px] text-rose-950 dark:text-rose-100"
                     style={{ fontFamily: 'Inter-Bold' }}
                   >
-                    {emergencyRequests.length} Emergency {emergencyRequests.length === 1 ? 'Issue' : 'Issues'}
+                    {emergencyRequests.length} Emergency{' '}
+                    {emergencyRequests.length === 1 ? 'Issue' : 'Issues'}
                   </Text>
 
                   <Text
@@ -380,20 +440,50 @@ export default function DashboardScreen() {
                 </View>
 
                 <View className="h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-rose-100 dark:bg-white/10">
-                  <ChevronRight size={16} color={isDark ? '#FDA4AF' : '#E11D48'} strokeWidth={2.4} />
+                  <ChevronRight
+                    size={16}
+                    color={isDark ? '#FDA4AF' : '#E11D48'}
+                    strokeWidth={2.4}
+                  />
                 </View>
               </View>
             </Pressable>
           </Animated.View>
         )}
 
+        {/* 4 Stat Cards */}
         <View className="flex-row flex-wrap justify-between mb-2">
-          <StatCard label="Total" value={total} color="#2563EB" icon={<BarChart3 size={18} color="#2563EB" />} index={0} />
-          <StatCard label="Open" value={open} color="#0284C7" icon={<AlertCircle size={18} color="#0284C7" />} index={1} />
-          <StatCard label="Active" value={inProgress} color="#D97706" icon={<Clock size={18} color="#D97706" />} index={2} />
-          <StatCard label="Resolved" value={resolved} color="#059669" icon={<CheckCircle size={18} color="#059669" />} index={3} />
+          <StatCard
+            label="Total"
+            value={total}
+            color="#2563EB"
+            icon={<BarChart3 size={18} color="#2563EB" />}
+            index={0}
+          />
+          <StatCard
+            label="Open"
+            value={open}
+            color="#0284C7"
+            icon={<AlertCircle size={18} color="#0284C7" />}
+            index={1}
+          />
+          <StatCard
+            label="Active"
+            value={inProgress}
+            color="#D97706"
+            icon={<Clock size={18} color="#D97706" />}
+            index={2}
+          />
+          <StatCard
+            label="Resolved"
+            value={resolved}
+            color="#059669"
+            icon={<CheckCircle size={18} color="#059669" />}
+            index={3}
+          />
         </View>
 
+        {/* Quick Actions Grid */}
         <SectionHeader title="Quick Actions" />
         <View className="flex-row flex-wrap justify-between mb-4">
           <QuickAction
@@ -426,11 +516,25 @@ export default function DashboardScreen() {
           />
         </View>
 
-        <SectionHeader title="Recent Activity" actionLabel="View All" onAction={() => router.push('/activity-history')} />
+        {/* Recent Activity Section */}
+        <SectionHeader
+          title="Recent Activity"
+          actionLabel="View All"
+          onAction={() => router.push('/activity-history')}
+        />
         {recentActivity.map((item, i) => (
-          <Animated.View key={item.id} entering={FadeInUp.delay(400 + i * 80).duration(400)}>
+          <Animated.View
+            key={item.id}
+            entering={FadeInUp.delay(400 + i * 80).duration(400)}
+          >
             <Pressable
-              onPress={() => item.linkedRequestId && router.push({ pathname: '/request-detail', params: { id: item.linkedRequestId } })}
+              onPress={() =>
+                item.linkedRequestId &&
+                router.push({
+                  pathname: '/request-detail',
+                  params: { id: item.linkedRequestId },
+                })
+              }
               className="mb-3 overflow-hidden rounded-[20px] border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm"
               style={({ pressed }) => ({
                 opacity: pressed ? 0.92 : 1,
@@ -438,7 +542,6 @@ export default function DashboardScreen() {
               })}
             >
               <View className="p-4 flex-row items-center gap-3.5">
-                {/* Status Indicator Dot with Pulse Aura */}
                 <View className="relative shrink-0">
                   {i === 0 && (
                     <View className="absolute -inset-1 rounded-full bg-teal-400/30 blur-sm" />
@@ -452,7 +555,6 @@ export default function DashboardScreen() {
                   />
                 </View>
 
-                {/* Activity Details */}
                 <View className="flex-1 min-w-0 pr-1">
                   <Text
                     numberOfLines={1}
@@ -476,20 +578,31 @@ export default function DashboardScreen() {
                   </Text>
                 </View>
 
-                {/* Right Action Chevron */}
                 <View className="h-7 w-7 shrink-0 items-center justify-center rounded-[10px] bg-slate-100 dark:bg-white/5">
-                  <ChevronRight size={14} color={isDark ? '#94A3B8' : '#64748B'} strokeWidth={2.4} />
+                  <ChevronRight
+                    size={14}
+                    color={isDark ? '#94A3B8' : '#64748B'}
+                    strokeWidth={2.4}
+                  />
                 </View>
               </View>
             </Pressable>
           </Animated.View>
         ))}
 
-        <SectionHeader title="Announcements" actionLabel="View All" onAction={() => router.push('/announcements')} />
+        {/* Announcements Section */}
+        <SectionHeader
+          title="Announcements"
+          actionLabel="View All"
+          onAction={() => router.push('/announcements')}
+        />
         {latestAnnouncements.map((ann, i) => {
           const isHigh = ann.priority === 'High';
           return (
-            <Animated.View key={ann.id} entering={FadeInUp.delay(600 + i * 80).duration(400)}>
+            <Animated.View
+              key={ann.id}
+              entering={FadeInUp.delay(600 + i * 80).duration(400)}
+            >
               <View className="mb-3 overflow-hidden rounded-[20px] border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm p-4">
                 <View className="flex-row items-center gap-3 mb-2.5">
                   <View
@@ -554,11 +667,16 @@ export default function DashboardScreen() {
           );
         })}
 
+        {/* Resolution Rate Insight Card */}
         {total > 0 && (
           <Animated.View entering={FadeInUp.delay(800).duration(400)}>
             <View className="mt-2 mb-8 overflow-hidden rounded-[22px] border border-teal-300 dark:border-teal-500/40 bg-white dark:bg-slate-900 shadow-sm">
               <LinearGradient
-                colors={isDark ? ['rgba(13,148,136,0.16)', 'rgba(13,148,136,0.02)'] : ['#F0FDFA', '#FFFFFF']}
+                colors={
+                  isDark
+                    ? ['rgba(13,148,136,0.16)', 'rgba(13,148,136,0.02)']
+                    : ['#F0FDFA', '#FFFFFF']
+                }
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={{ padding: 18 }}
@@ -568,7 +686,11 @@ export default function DashboardScreen() {
                     <View className="relative shrink-0">
                       <View className="absolute -inset-1 rounded-[14px] bg-teal-400/25 blur-sm" />
                       <View className="h-[44px] w-[44px] items-center justify-center rounded-[13px] bg-teal-100 dark:bg-teal-950/80 border border-teal-300 dark:border-teal-500/40">
-                        <TrendingUp size={21} color="#0D9488" strokeWidth={2.4} />
+                        <TrendingUp
+                          size={21}
+                          color="#0D9488"
+                          strokeWidth={2.4}
+                        />
                       </View>
                     </View>
 
@@ -653,7 +775,7 @@ function QuickAction({
           justifyContent: 'space-between',
         }}
       >
-        {/* Top: Glassmorphic Icon Box */}
+        {/* Glassmorphic Icon Container */}
         <View
           style={{
             width: 42,
@@ -669,7 +791,7 @@ function QuickAction({
           {icon}
         </View>
 
-        {/* Bottom: Title & Subtitle */}
+        {/* Action Titles */}
         <View style={{ marginTop: 12 }}>
           <Text
             numberOfLines={1}
@@ -701,186 +823,3 @@ function QuickAction({
   );
 }
 
-const styles = StyleSheet.create({
-  heroWrap: {
-    position: 'relative',
-  },
-  heroSection: {
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
-    paddingBottom: 32,
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  heroBg1: {
-    position: 'absolute',
-    top: -40,
-    right: -40,
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-  },
-  heroBg2: {
-    position: 'absolute',
-    bottom: 20,
-    left: -20,
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: 'rgba(255,255,255,0.03)',
-  },
-  heroTopRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
-  greeting: { fontSize: 14, color: 'rgba(255,255,255,0.7)' },
-  userName: { fontSize: 28, color: '#FFFFFF', marginTop: 2, letterSpacing: -0.5 },
-  propertyPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    alignSelf: 'flex-start',
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    marginTop: 10,
-  },
-  propertyDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#34D399' },
-  propertyText: { fontSize: 12, color: 'rgba(255,255,255,0.9)' },
-  bellButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-  },
-  bellDot: {
-    position: 'absolute',
-    top: 12,
-    right: 13,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#EF4444',
-    borderWidth: 2,
-    borderColor: 'rgba(30,107,90,0.8)',
-  },
-  rentCard: {
-    marginHorizontal: 20,
-    borderRadius: 20,
-    marginTop: -28,
-    overflow: 'hidden',
-  },
-  rentCardGradient: {
-    borderRadius: 20,
-    padding: 18,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  rentLeft: { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
-  rentIconWrap: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  rentLabel: { fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.5 },
-  rentAmount: { fontSize: 22, marginTop: 2, letterSpacing: -0.5 },
-  rentDue: { fontSize: 11, marginTop: 2 },
-  rentButton: { borderRadius: 12, overflow: 'hidden' },
-  rentButtonGradient: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 18, paddingVertical: 12, borderRadius: 12 },
-  rentButtonText: { color: '#FFFFFF', fontSize: 14 },
-  content: { paddingHorizontal: 20, paddingTop: 24 },
-  connectedCard: { borderRadius: 18, borderWidth: 1, padding: 16, marginBottom: 20 },
-  connectedHeader: { flexDirection: 'row', alignItems: 'flex-start' },
-  connectedIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: 13 },
-  connectedLabel: { fontSize: 10, letterSpacing: 1 },
-  connectedName: { fontSize: 16, marginTop: 4 },
-  connectedAddr: { fontSize: 12, marginTop: 4, lineHeight: 17 },
-  approvalBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 12 },
-  approvalBadgeText: { fontSize: 10 },
-  messagingCard: { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 16, borderWidth: 1, padding: 14, marginBottom: 16 },
-  messagingIcon: { width: 42, height: 42, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
-  messagingLabel: { fontSize: 10, letterSpacing: 1 },
-  messagingDesc: { fontSize: 13, marginTop: 3 },
-  messagingPreview: { fontSize: 11, marginTop: 4, lineHeight: 16 },
-  emergencyBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 20,
-    overflow: 'hidden',
-  },
-  emergencyIconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
-    backgroundColor: '#DC2626',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emergencyTitle: { fontSize: 14 },
-  emergencyDesc: { fontSize: 12, marginTop: 2 },
-  statsRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
-  actionsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  quickAction: { width: '48%', flexGrow: 1, flexBasis: '46%', borderRadius: 18, overflow: 'hidden' },
-  quickActionGradient: { padding: 18, alignItems: 'center', borderRadius: 18 },
-  quickActionIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 10,
-  },
-  quickActionLabel: { fontSize: 13, color: '#FFFFFF' },
-  activityItem: {
-    flexDirection: 'row',
-    gap: 12,
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 8,
-    alignItems: 'center',
-  },
-  activityDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  activityPulse: {
-    position: 'absolute',
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: 'rgba(30,107,90,0.3)',
-  },
-  activityTitle: { fontSize: 14 },
-  activityDesc: { fontSize: 12, marginTop: 3, lineHeight: 17 },
-  activityTime: { fontSize: 11, marginTop: 4 },
-  announcementCard: { borderRadius: 18, padding: 16, marginBottom: 10 },
-  announcementHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 10 },
-  announcementIcon: { width: 36, height: 36, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  announcementTitle: { fontSize: 14 },
-  announcementMeta: { fontSize: 11, marginTop: 2 },
-  priorityDot: { width: 8, height: 8, borderRadius: 4 },
-  announcementBody: { fontSize: 13, lineHeight: 19 },
-  insightCard: {
-    borderRadius: 18,
-    padding: 18,
-    marginTop: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderWidth: 1,
-    borderColor: 'rgba(30,107,90,0.1)',
-  },
-  insightLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  insightTitle: { fontSize: 14 },
-  insightDesc: { fontSize: 11, marginTop: 2 },
-  insightValue: { fontSize: 28, letterSpacing: -1 },
-});

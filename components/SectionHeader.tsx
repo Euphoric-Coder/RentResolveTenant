@@ -1,6 +1,5 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
-import { useTheme } from '@/context/ThemeContext';
 
 interface SectionHeaderProps {
   title: string;
@@ -9,37 +8,29 @@ interface SectionHeaderProps {
 }
 
 export function SectionHeader({ title, actionLabel, onAction }: SectionHeaderProps) {
-  const { colors } = useTheme();
   return (
-    <View style={styles.container}>
-      <Text style={[styles.title, { color: colors.textPrimary, fontFamily: 'Inter-Bold' }]}>{title}</Text>
+    <View className="flex-row justify-between items-center mb-3.5 mt-6">
+      <Text
+        className="text-[18px] text-slate-900 dark:text-white"
+        style={{ fontFamily: 'Inter-Bold' }}
+      >
+        {title}
+      </Text>
       {actionLabel && onAction && (
-        <Pressable onPress={onAction} style={styles.action}>
-          <Text style={[styles.actionLabel, { color: colors.primary, fontFamily: 'Inter-SemiBold' }]}>{actionLabel}</Text>
-          <ChevronRight size={14} color={colors.primary} />
+        <Pressable
+          onPress={onAction}
+          className="flex-row items-center gap-1 active:opacity-75"
+        >
+          <Text
+            className="text-[13px] text-teal-600 dark:text-teal-400"
+            style={{ fontFamily: 'Inter-SemiBold' }}
+          >
+            {actionLabel}
+          </Text>
+          <ChevronRight size={14} color="#0D9488" strokeWidth={2.4} />
         </Pressable>
       )}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 14,
-    marginTop: 24,
-  },
-  title: {
-    fontSize: 18,
-  },
-  action: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-  },
-  actionLabel: {
-    fontSize: 13,
-  },
-});
